@@ -1,0 +1,13 @@
+# Ismailia Geo Dashboard
+
+> Interactive geospatial dashboard for Ismailia, Egypt — visualizing land-use change between 2016 and 2026 across urban, agricultural, industrial, and water sectors along the development axis.
+
+The dashboard pairs an interactive Leaflet map with sector-specific analytics: distribution histograms, top-N rankings, year-over-year share comparisons, and movers leaderboards. All data is loaded from local GeoJSON / JSON files; no backend is required.
+
+## Pages
+
+- [Overview](/): KPI snapshot, map, and 2016 vs 2026 land-use comparison for the full study area.
+- [Urban](/urban): Urban footprint growth, building size distribution, density hotspots, and top urban blocks.
+- [Agricultural](/agricultural): Agricultural plot-size distribution (feddan), fragmentation metrics, and largest plots.
+- [Industrial](/industrial): Industrial facility size classes, SME base on the development axis, and top facilities.
+- [Comparison](/comparison): Side-by-side 2016 vs 2026 maps, share-of-area comparison, deltas, and movers leaderboard.

@@ -1,0 +1,29 @@
+{
+"type": "FeatureCollection",
+"name": "lRT_Station",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{"type":"Feature","properties":{"اسم_المحطة":"المنطقة الصناعية بالعاصمة"},"geometry":{"type":"Point","coordinates":[31.782890192123961,29.908704646029712]}},
+{"type":"Feature","properties":{"اسم_المحطة":"حدائق العاشر"},"geometry":{"type":"Point","coordinates":[31.695930607911606,30.282127940178878]}},
+{"type":"Feature","properties":{"اسم_المحطة":"عمر بن الخطاب"},"geometry":{"type":"Point","coordinates":[31.728923263441789,30.300252816425221]}},
+{"type":"Feature","properties":{"اسم_المحطة":"مركز المدينة"},"geometry":{"type":"Point","coordinates":[31.744520265374149,30.304119813704663]}},
+{"type":"Feature","properties":{"اسم_المحطة":"المعهد التكنولوجي"},"geometry":{"type":"Point","coordinates":[31.758676861592686,30.307627828953983]}},
+{"type":"Feature","properties":{"اسم_المحطة":"العاشر من رمضان"},"geometry":{"type":"Point","coordinates":[31.779705343943746,30.307880624549149]}},
+{"type":"Feature","properties":{"اسم_المحطة":"العاصمة المركزية"},"geometry":{"type":"Point","coordinates":[31.716012412473027,29.884986703580115]}},
+{"type":"Feature","properties":{"اسم_المحطة":"عدلي منصور"},"geometry":{"type":"Point","coordinates":[31.421297252213648,30.14644791868465]}},
+{"type":"Feature","properties":{"اسم_المحطة":"العبور"},"geometry":{"type":"Point","coordinates":[31.481295692031182,30.162851394253181]}},
+{"type":"Feature","properties":{"اسم_المحطة":"المستقبل"},"geometry":{"type":"Point","coordinates":[31.554116885830819,30.173124847166278]}},
+{"type":"Feature","properties":{"اسم_المحطة":"الشروق"},"geometry":{"type":"Point","coordinates":[31.605802353048499,30.179538064289339]}},
+{"type":"Feature","properties":{"اسم_المحطة":"هليوبوليس الجديدة"},"geometry":{"type":"Point","coordinates":[31.652699802195748,30.184015768100899]}},
+{"type":"Feature","properties":{"اسم_المحطة":"بدر"},"geometry":{"type":"Point","coordinates":[31.716026793262181,30.175141253134971]}},
+{"type":"Feature","properties":{"اسم_المحطة":"الروبيكي"},"geometry":{"type":"Point","coordinates":[31.752487651702019,30.166528362061737]}},
+{"type":"Feature","properties":{"اسم_المحطة":"حدائق العاصمة"},"geometry":{"type":"Point","coordinates":[31.806813662614804,30.136657475649518]}},
+{"type":"Feature","properties":{"اسم_المحطة":"مطار العاصمة"},"geometry":{"type":"Point","coordinates":[31.782484274008205,30.075871546814806]}},
+{"type":"Feature","properties":{"اسم_المحطة":"مدينة الفنون والثقافة"},"geometry":{"type":"Point","coordinates":[31.724981710233202,30.013641769316052]}},
+{"type":"Feature","properties":{"اسم_المحطة":"كاتدرائية الميلاد"},"geometry":{"type":"Point","coordinates":[31.715613508001798,29.979208493906597]}},
+{"type":"Feature","properties":{"اسم_المحطة":"القيادة الاستراتيجية"},"geometry":{"type":"Point","coordinates":[31.687203294843911,29.958636161744799]}},
+{"type":"Feature","properties":{"اسم_المحطة":"المنطقة الصناعية"},"geometry":{"type":"Point","coordinates":[31.715513356238816,30.203903651367145]}},
+{"type":"Feature","properties":{"اسم_المحطة":"العبور الجديدة"},"geometry":{"type":"Point","coordinates":[31.691458799133066,30.230665078146284]}},
+{"type":"Feature","properties":{"اسم_المحطة":"مدينة مصر للألعاب الاوليمبية"},"geometry":{"type":"Point","coordinates":[31.694725866874236,29.896246687731907]}}
+]
+}

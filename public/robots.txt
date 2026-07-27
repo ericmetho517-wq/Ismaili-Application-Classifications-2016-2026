@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ismailia-insight-hub.lovable.app/sitemap.xml

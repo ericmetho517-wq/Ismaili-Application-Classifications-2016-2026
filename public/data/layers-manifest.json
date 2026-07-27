@@ -1,0 +1,594 @@
+{
+  "layers": [
+    {
+      "name": "LandCover",
+      "geometry_type": "MultiPolygon Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 86,
+      "fields": [
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "اسم_المسطح",
+          "type": "str"
+        },
+        {
+          "name": "مساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Agricultural_Changes",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 1365,
+      "fields": [
+        {
+          "name": "سعر_الايجار_زراعية_2024",
+          "type": "float64"
+        },
+        {
+          "name": "نوع_ملكية_الأرض",
+          "type": "str"
+        },
+        {
+          "name": "أنواع_المحاصيل_المزروعة",
+          "type": "str"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "المساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_المساحة",
+          "type": "float64"
+        },
+        {
+          "name": "المساحة_فدان",
+          "type": "float64"
+        },
+        {
+          "name": "فرق_السعر",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "str"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Axis_Road_Sector",
+      "geometry_type": "MultiLineString Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 1,
+      "fields": [
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "طول_المحور_كم",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Industrial_Changes",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 262,
+      "fields": [
+        {
+          "name": "نمط_العمران",
+          "type": "object"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "مساحة_التغير_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_المساحه",
+          "type": "float64"
+        },
+        {
+          "name": "مساحة_التغير_بالمتر",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "str"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "SHAPE_Length",
+          "type": "float64"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Land_Cover2016",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 21514,
+      "fields": [
+        {
+          "name": "استخدام_الأرض",
+          "type": "int32"
+        },
+        {
+          "name": "مساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "المساحة_فدان",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "str"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "SHAPE_Length",
+          "type": "float64"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Land_Cover2026",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 32605,
+      "fields": [
+        {
+          "name": "المساحة_فدان",
+          "type": "float64"
+        },
+        {
+          "name": "نمط_العمران",
+          "type": "str"
+        },
+        {
+          "name": "نوع_ملكية_الأرض",
+          "type": "str"
+        },
+        {
+          "name": "أنواع_المحاصيل_المزروعة",
+          "type": "str"
+        },
+        {
+          "name": "استخدام_الأرض",
+          "type": "int32"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "فرق_السعر",
+          "type": "float64"
+        },
+        {
+          "name": "مساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "حالة_التغير",
+          "type": "str"
+        },
+        {
+          "name": "نسبة_التغير",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "str"
+        },
+        {
+          "name": "فرق_سعر_الايجار",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_صناعي",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_أراضي_زراعية",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_عمران",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_صناعي_ج_أ",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_عمران_ج_أ",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_التغير_زراعي_ج_أ",
+          "type": "float64"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "سعر_الأرض_2026",
+          "type": "float64"
+        },
+        {
+          "name": "سعر_الأرض_2016",
+          "type": "float64"
+        },
+        {
+          "name": "سعر_الايجار_زراعية_2026",
+          "type": "float64"
+        },
+        {
+          "name": "سعر_الايجار_زراعية_2016",
+          "type": "float64"
+        },
+        {
+          "name": "المحافظة",
+          "type": "str"
+        },
+        {
+          "name": "SHAPE_Length",
+          "type": "float64"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Land_Cover_Area_Compare",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 0,
+      "fields": [
+        {
+          "name": "استخدام_الأرض",
+          "type": "int32"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "object"
+        },
+        {
+          "name": "مساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "حالة_التغير",
+          "type": "object"
+        },
+        {
+          "name": "نسبة_التغير",
+          "type": "float64"
+        },
+        {
+          "name": "Years",
+          "type": "int32"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "object"
+        },
+        {
+          "name": "نوع_المسطح",
+          "type": "object"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "object"
+        },
+        {
+          "name": "انماط_استخدام_الاراضي",
+          "type": "object"
+        },
+        {
+          "name": "GlobalID",
+          "type": "object"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Study_Area_Sector",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "preserved-boundary",
+      "web_crs": "EPSG:4326",
+      "feature_count": 1,
+      "fields": [
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "مساحة_المنطقة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "نوع_المحور",
+          "type": "object"
+        },
+        {
+          "name": "طول_المحور",
+          "type": "object"
+        },
+        {
+          "name": "الحرم_المكاني_للمحور",
+          "type": "object"
+        },
+        {
+          "name": "نوع_الرسم",
+          "type": "object"
+        },
+        {
+          "name": "sector",
+          "type": "object"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Urban_Changes",
+      "geometry_type": "MultiPolygon",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 8049,
+      "fields": [
+        {
+          "name": "نمط_العمران",
+          "type": "object"
+        },
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "مساحة_التغير_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "نسبة_المساحه",
+          "type": "float64"
+        },
+        {
+          "name": "مساحة_التغير_بالمتر",
+          "type": "float64"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "وصف_الاستخدام",
+          "type": "str"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "SHAPE_Length",
+          "type": "float64"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Water_Changes",
+      "geometry_type": "MultiPolygon Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 91,
+      "fields": [
+        {
+          "name": "اسم_المحور",
+          "type": "str"
+        },
+        {
+          "name": "اسم_القطاع",
+          "type": "str"
+        },
+        {
+          "name": "اسم_المسطح",
+          "type": "str"
+        },
+        {
+          "name": "مساحة_كم2",
+          "type": "float64"
+        },
+        {
+          "name": "GlobalID",
+          "type": "str"
+        },
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "Metro_Station",
+      "geometry_type": "Point Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 34,
+      "fields": [
+        {
+          "name": "اسم_المحطة",
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "name": "Metro_Line",
+      "geometry_type": "MultiLineString Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 2,
+      "fields": [
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        }
+      ]
+    },
+    {
+      "name": "lRT_Station",
+      "geometry_type": "Point Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 22,
+      "fields": [
+        {
+          "name": "اسم_المحطة",
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "name": "LRT_Line",
+      "geometry_type": "MultiLineString Z",
+      "source_crs": "EPSG:32636",
+      "web_crs": "EPSG:4326",
+      "feature_count": 2,
+      "fields": [
+        {
+          "name": "Shape_Length",
+          "type": "float64"
+        }
+      ]
+    }
+  ]
+}

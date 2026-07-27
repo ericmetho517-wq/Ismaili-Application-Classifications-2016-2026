@@ -1,0 +1,630 @@
+{
+  "land_cover_2016": [
+    {
+      "name": "ارض فضاء",
+      "area_km2": 1285.3284,
+      "count": 1309
+    },
+    {
+      "name": "زراعي",
+      "area_km2": 700.3114,
+      "count": 3392
+    },
+    {
+      "name": "منطقة عسكرية",
+      "area_km2": 222.5866,
+      "count": 98
+    },
+    {
+      "name": "حضري / عمراني",
+      "area_km2": 186.5869,
+      "count": 14620
+    },
+    {
+      "name": "صناعي",
+      "area_km2": 59.489,
+      "count": 501
+    },
+    {
+      "name": "خدمات",
+      "area_km2": 59.0946,
+      "count": 720
+    },
+    {
+      "name": "طرق",
+      "area_km2": 36.3364,
+      "count": 25
+    },
+    {
+      "name": "مياه",
+      "area_km2": 22.7614,
+      "count": 440
+    },
+    {
+      "name": "خضراء / غابات",
+      "area_km2": 5.5461,
+      "count": 355
+    },
+    {
+      "name": "مقابر",
+      "area_km2": 3.2282,
+      "count": 36
+    },
+    {
+      "name": "تجاري",
+      "area_km2": 2.554,
+      "count": 18
+    }
+  ],
+  "land_cover_2026": [
+    {
+      "name": "ارض فضاء",
+      "area_km2": 949.3279,
+      "count": 1901
+    },
+    {
+      "name": "زراعي",
+      "area_km2": 941.8428,
+      "count": 4986
+    },
+    {
+      "name": "حضري / عمراني",
+      "area_km2": 248.2164,
+      "count": 22631
+    },
+    {
+      "name": "منطقة عسكرية",
+      "area_km2": 220.5634,
+      "count": 106
+    },
+    {
+      "name": "صناعي",
+      "area_km2": 78.3558,
+      "count": 753
+    },
+    {
+      "name": "خدمات",
+      "area_km2": 69.081,
+      "count": 1160
+    },
+    {
+      "name": "طرق",
+      "area_km2": 46.9271,
+      "count": 144
+    },
+    {
+      "name": "مياه",
+      "area_km2": 14.6334,
+      "count": 458
+    },
+    {
+      "name": "خضراء / غابات",
+      "area_km2": 6.532,
+      "count": 391
+    },
+    {
+      "name": "مقابر",
+      "area_km2": 5.7888,
+      "count": 57
+    },
+    {
+      "name": "تجاري",
+      "area_km2": 2.554,
+      "count": 18
+    }
+  ],
+  "urban_by_type": [
+    {
+      "name": "سكني",
+      "area_km2": 61.8573,
+      "count": 8049
+    }
+  ],
+  "agricultural_by_crop": [
+    {
+      "name": "خضراوات و فواكه",
+      "area_km2": 145.5682,
+      "count": 964
+    },
+    {
+      "name": "خضراوات و فواكه و حبوب",
+      "area_km2": 61.2085,
+      "count": 175
+    },
+    {
+      "name": "خضروات",
+      "area_km2": 38.8816,
+      "count": 121
+    },
+    {
+      "name": "خضار و حبوب و فواكه و علف",
+      "area_km2": 11.3917,
+      "count": 76
+    },
+    {
+      "name": "غير محدد",
+      "area_km2": 0.7077,
+      "count": 27
+    },
+    {
+      "name": "فواكه",
+      "area_km2": 0.2409,
+      "count": 1
+    },
+    {
+      "name": "فواكه و حبوب",
+      "area_km2": 0.149,
+      "count": 1
+    }
+  ],
+  "agricultural_by_ownership": [
+    {
+      "name": "تمليك",
+      "area_km2": 133.167,
+      "count": 1034
+    },
+    {
+      "name": "ايجار",
+      "area_km2": 124.9806,
+      "count": 331
+    }
+  ],
+  "industrial_by_desc": [
+    {
+      "name": "مصنع",
+      "area_km2": 17.4647,
+      "count": 143
+    },
+    {
+      "name": "مخزن",
+      "area_km2": 0.3644,
+      "count": 31
+    },
+    {
+      "name": "MG GROUP",
+      "area_km2": 0.0564,
+      "count": 1
+    },
+    {
+      "name": "ارض فضاء",
+      "area_km2": 0.0537,
+      "count": 1
+    },
+    {
+      "name": "فوج1",
+      "area_km2": 0.0523,
+      "count": 1
+    },
+    {
+      "name": "شركة فيلو إيجي للصناعات الشكاير",
+      "area_km2": 0.0513,
+      "count": 1
+    },
+    {
+      "name": "الشركة الوطنية للصناعات المحمية",
+      "area_km2": 0.0502,
+      "count": 1
+    },
+    {
+      "name": "محطة ( خلط الخرسانة المركزية) بالعاشر من رمضان",
+      "area_km2": 0.0449,
+      "count": 1
+    },
+    {
+      "name": "سوبالك",
+      "area_km2": 0.0434,
+      "count": 1
+    },
+    {
+      "name": "شركة",
+      "area_km2": 0.0388,
+      "count": 2
+    },
+    {
+      "name": "مصنع المحبة",
+      "area_km2": 0.0381,
+      "count": 1
+    },
+    {
+      "name": "اكوا تكنولوجي",
+      "area_km2": 0.0331,
+      "count": 2
+    },
+    {
+      "name": "السويدى للمحولات",
+      "area_km2": 0.0303,
+      "count": 1
+    },
+    {
+      "name": "مصنع ايدمكس",
+      "area_km2": 0.0294,
+      "count": 1
+    },
+    {
+      "name": "مصنع الزاهي",
+      "area_km2": 0.0294,
+      "count": 2
+    },
+    {
+      "name": "مصر بلاستيك لتصنيع العبوات",
+      "area_km2": 0.0266,
+      "count": 1
+    },
+    {
+      "name": "GPS",
+      "area_km2": 0.026,
+      "count": 1
+    },
+    {
+      "name": "سايبس للدهانات",
+      "area_km2": 0.0254,
+      "count": 1
+    },
+    {
+      "name": "مجمع الفرسان الصناعي وحده 61 بجوار ارما",
+      "area_km2": 0.0242,
+      "count": 1
+    },
+    {
+      "name": "مخازن هير العاشر",
+      "area_km2": 0.0241,
+      "count": 1
+    },
+    {
+      "name": "مصبغه خلفاء وجدي مؤمن للصناعات النسيجيه والتصدير",
+      "area_km2": 0.0239,
+      "count": 1
+    },
+    {
+      "name": "OptaLine For Medical Devices",
+      "area_km2": 0.0236,
+      "count": 1
+    },
+    {
+      "name": "Elsewedy Electric - Bead Wire Factory",
+      "area_km2": 0.0228,
+      "count": 4
+    },
+    {
+      "name": "مخزن و جراج شركة عبدالحميد سليمان للمقاولات",
+      "area_km2": 0.0226,
+      "count": 1
+    },
+    {
+      "name": "مصنع مودرن تريد",
+      "area_km2": 0.0222,
+      "count": 1
+    },
+    {
+      "name": "شركه jHY - Manufacturer",
+      "area_km2": 0.0206,
+      "count": 1
+    },
+    {
+      "name": "Mega Pack - Packing Materials",
+      "area_km2": 0.0201,
+      "count": 1
+    },
+    {
+      "name": "مصنع سبيس كيميكال - Space Chemical",
+      "area_km2": 0.0192,
+      "count": 1
+    },
+    {
+      "name": "فارما اوفر سيز رئيسى العبور",
+      "area_km2": 0.019,
+      "count": 1
+    },
+    {
+      "name": "مصنع النور كريت للمنتجات الاسمنتيه",
+      "area_km2": 0.0146,
+      "count": 2
+    },
+    {
+      "name": "Kayan frozen foods",
+      "area_km2": 0.0131,
+      "count": 1
+    },
+    {
+      "name": "مصنع سلسبيل بلاست",
+      "area_km2": 0.0125,
+      "count": 1
+    },
+    {
+      "name": "معمل تفريخ البرماوي (سرابيوم )",
+      "area_km2": 0.0124,
+      "count": 1
+    },
+    {
+      "name": "مصنع القاهره للمستلزمات المروريه",
+      "area_km2": 0.0115,
+      "count": 1
+    },
+    {
+      "name": "Vigor plastic",
+      "area_km2": 0.0108,
+      "count": 1
+    },
+    {
+      "name": "شركة هوايي لتصنيع الادوات الصحية",
+      "area_km2": 0.0108,
+      "count": 1
+    },
+    {
+      "name": "الشكره البورسعيديه للانشاءات البحريه",
+      "area_km2": 0.0107,
+      "count": 2
+    },
+    {
+      "name": "كلاركات كريم سعيد",
+      "area_km2": 0.0105,
+      "count": 1
+    },
+    {
+      "name": "شركة البدر لتكنولوجيا مواد البناء",
+      "area_km2": 0.0105,
+      "count": 1
+    },
+    {
+      "name": "AL BARON Group for textile",
+      "area_km2": 0.0101,
+      "count": 1
+    },
+    {
+      "name": "غزالة للصناعات الحديديةGSF",
+      "area_km2": 0.0101,
+      "count": 1
+    },
+    {
+      "name": "شركة برستيج",
+      "area_km2": 0.0096,
+      "count": 1
+    },
+    {
+      "name": "الشرقية للضفائر الكهربائية ش.م.م",
+      "area_km2": 0.0096,
+      "count": 1
+    },
+    {
+      "name": "شركة جرين جولد",
+      "area_km2": 0.0095,
+      "count": 1
+    },
+    {
+      "name": "ايس كريم جمعه",
+      "area_km2": 0.009,
+      "count": 1
+    },
+    {
+      "name": "معصرة سينالكو",
+      "area_km2": 0.0086,
+      "count": 1
+    },
+    {
+      "name": "Power Service projects (PSP)",
+      "area_km2": 0.0083,
+      "count": 1
+    },
+    {
+      "name": "Sweetana مصنع سويتانا للشوكولاته",
+      "area_km2": 0.0069,
+      "count": 1
+    },
+    {
+      "name": "سامح الحديدي للخرسانه الجاهزه",
+      "area_km2": 0.0069,
+      "count": 1
+    },
+    {
+      "name": "شركه ام ان اس الدوليه للصناعات الكنيائيه",
+      "area_km2": 0.0068,
+      "count": 1
+    },
+    {
+      "name": "مصنع لوفيان التركي",
+      "area_km2": 0.0065,
+      "count": 1
+    },
+    {
+      "name": "السراج للتبريد ٢",
+      "area_km2": 0.0063,
+      "count": 1
+    },
+    {
+      "name": "Acoman factory",
+      "area_km2": 0.0059,
+      "count": 1
+    },
+    {
+      "name": "HSD Steel",
+      "area_km2": 0.0059,
+      "count": 1
+    },
+    {
+      "name": "سما للانشاءات المعدنية ٢",
+      "area_km2": 0.0057,
+      "count": 1
+    },
+    {
+      "name": "مصنع المصرية الاوروبية للدهانات الجديد",
+      "area_km2": 0.0056,
+      "count": 2
+    },
+    {
+      "name": "سند الربيكي",
+      "area_km2": 0.0055,
+      "count": 1
+    },
+    {
+      "name": "PSP A5 Plant",
+      "area_km2": 0.0051,
+      "count": 1
+    },
+    {
+      "name": "المنار للمواد الغذائية",
+      "area_km2": 0.0048,
+      "count": 1
+    },
+    {
+      "name": "شركة البيت لصناعة المفروشات-House Covers Industries",
+      "area_km2": 0.0048,
+      "count": 1
+    },
+    {
+      "name": "Manazil PVC",
+      "area_km2": 0.0046,
+      "count": 1
+    },
+    {
+      "name": "شركة السلام",
+      "area_km2": 0.0046,
+      "count": 1
+    },
+    {
+      "name": "شركة موقع النجوم",
+      "area_km2": 0.0044,
+      "count": 1
+    },
+    {
+      "name": "الشركة الشرقية للغازات - اتيكو جاس",
+      "area_km2": 0.0039,
+      "count": 1
+    },
+    {
+      "name": "مصنع رويال هوم لتصنيع المراتب والمفروشات والأثاث",
+      "area_km2": 0.0033,
+      "count": 1
+    },
+    {
+      "name": "O Marketing",
+      "area_km2": 0.0031,
+      "count": 1
+    },
+    {
+      "name": "المحبة بلاست",
+      "area_km2": 0.0031,
+      "count": 1
+    },
+    {
+      "name": "السمندل للمقاولات",
+      "area_km2": 0.003,
+      "count": 1
+    },
+    {
+      "name": "شركه الصفا والمروه فراوله",
+      "area_km2": 0.0028,
+      "count": 1
+    },
+    {
+      "name": "مخازن صادق السويدي",
+      "area_km2": 0.0027,
+      "count": 1
+    },
+    {
+      "name": "أركان للخرسانة الجاهزه",
+      "area_km2": 0.0025,
+      "count": 1
+    },
+    {
+      "name": "Winner welding factory (Rafik Bebawi)",
+      "area_km2": 0.0022,
+      "count": 1
+    },
+    {
+      "name": "أركان للخرسانة الجاهزة",
+      "area_km2": 0.002,
+      "count": 1
+    },
+    {
+      "name": "الشرق للاكواب الورقيه",
+      "area_km2": 0.002,
+      "count": 1
+    },
+    {
+      "name": "ODFI (Oil & Dough for food industries)",
+      "area_km2": 0.0017,
+      "count": 1
+    },
+    {
+      "name": "SEDCO #2 EL Sewedy",
+      "area_km2": 0.0017,
+      "count": 1
+    },
+    {
+      "name": "مخزن ABB",
+      "area_km2": 0.0016,
+      "count": 1
+    },
+    {
+      "name": "شركة ريو بلاست لتصنيع إضافات الأسمنت",
+      "area_km2": 0.0015,
+      "count": 1
+    },
+    {
+      "name": "ايليت للاعمدة(elite)",
+      "area_km2": 0.0013,
+      "count": 1
+    },
+    {
+      "name": "شركة مصر ايطاليا لانتاج التروس والخراطة وقطع الغيار",
+      "area_km2": 0.0008,
+      "count": 1
+    },
+    {
+      "name": "مصنع الجزيره للزيتون والمخللات",
+      "area_km2": 0.0005,
+      "count": 1
+    }
+  ],
+  "water_by_name": [
+    {
+      "name": "ابار مياه",
+      "area_km2": 0.8224,
+      "count": 80
+    },
+    {
+      "name": "بركة",
+      "area_km2": 0.3282,
+      "count": 4
+    },
+    {
+      "name": "ترع ومصارف",
+      "area_km2": 0.152,
+      "count": 6
+    },
+    {
+      "name": "احواض مياه",
+      "area_km2": 0.0177,
+      "count": 1
+    }
+  ],
+  "change_status_2026": [
+    {
+      "name": "2",
+      "area_km2": 2204.1217,
+      "count": 21971
+    },
+    {
+      "name": "1",
+      "area_km2": 378.4635,
+      "count": 10631
+    },
+    {
+      "name": "غير محدد",
+      "area_km2": 1.2374,
+      "count": 3
+    }
+  ],
+  "totals": {
+    "study_area_km2": 2583.7617,
+    "axis_length_km": 135.1981,
+    "urban_count": 8049,
+    "agri_count": 1365,
+    "industrial_count": 262,
+    "water_count": 91,
+    "urban_area_km2": 61.8573,
+    "agri_area_km2": 258.1476,
+    "industrial_area_km2": 19.0231,
+    "water_area_km2": 1.3203
+  }
+}
