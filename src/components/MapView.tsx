@@ -513,6 +513,7 @@ export function MapView(props: MapViewProps) {
         zoomControl: true,
         attributionControl: true,
         preferCanvas: true,
+        scrollWheelZoom: false,
       }).setView([30.6, 32.0], 10);
       map.createPane("study-boundary").style.zIndex = "410";
       map.createPane("map-features").style.zIndex = "420";

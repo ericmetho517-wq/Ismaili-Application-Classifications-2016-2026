@@ -133,6 +133,23 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Keep scrolling fluid: expensive glass effects return as soon as scrolling settles. */
+.dashboard-main.is-scrolling .glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--glass-shadow) 72%, transparent) !important;
+}
+
+.dashboard-main.is-scrolling .glass::before {
+  opacity: 0.16 !important;
+}
+
+.dashboard-main.is-scrolling .surface-hover,
+.dashboard-main.is-scrolling .surface-hover:hover {
+  transition: none !important;
+  transform: none !important;
+}
+
 .dashboard-main > *,
 .dashboard-main :where(.grid, .flex) > *,
 .dashboard-main :where(section, article, header, div) {

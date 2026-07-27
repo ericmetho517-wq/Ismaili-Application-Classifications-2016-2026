@@ -34,6 +34,7 @@ export function MobileNav() {
           <Link
             key={item.to}
             to={item.to}
+            preload="viewport"
             aria-label={item.label}
             className={`flex min-w-[58px] flex-1 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[8px] font-semibold transition-colors ${
               active

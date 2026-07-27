@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { dict, LangContext, type Lang } from "../lib/i18n";
@@ -87,6 +87,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [lang, setLang] = useState<Lang>("ar");
   const [theme, setTheme] = useState<Theme>("light");
+  const mainRef = useRef<HTMLElement>(null);
   const dir = lang === "ar" ? "rtl" : "ltr";
 
   useEffect(() => {
@@ -103,6 +104,32 @@ function RootComponent() {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
+    let frame = 0;
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
+    const onScroll = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(() => {
+          main.classList.add("is-scrolling");
+          frame = 0;
+        });
+      }
+      if (settleTimer) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => main.classList.remove("is-scrolling"), 140);
+    };
+
+    main.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      main.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+      if (settleTimer) window.clearTimeout(settleTimer);
+      main.classList.remove("is-scrolling");
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeContext.Provider value={{ theme, setTheme }}>
@@ -112,7 +139,7 @@ function RootComponent() {
             dir={dir}
           >
             <Sidebar />
-            <main className="dashboard-main flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain pb-16 md:pb-0">
+            <main ref={mainRef} className="dashboard-main flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain pb-16 md:pb-0">
               <Outlet />
             </main>
             <MobileNav />

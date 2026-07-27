@@ -47,6 +47,7 @@ export function Sidebar() {
             <Link
               key={it.to}
               to={it.to}
+              preload="viewport"
               title={it.label}
               aria-label={it.label}
               className={`group relative flex h-10 w-10 items-center justify-center rounded-lg border border-transparent transition-colors ${
