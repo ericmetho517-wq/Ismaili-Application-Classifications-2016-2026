@@ -151,6 +151,12 @@ function groupPrices(rows: PriceRow[]): PriceGroup[] {
 type PriceCategoryKey = "buildings" | "industrial" | "agricultural";
 type PriceCategory = PriceCategoryKey | "other";
 
+const CATEGORY_COLORS: Record<PriceCategoryKey, string> = {
+  buildings: "#2563eb",
+  industrial: "#ea580c",
+  agricultural: "#16a34a",
+};
+
 const PRICE_CATEGORIES: Array<{
   key: PriceCategoryKey;
   labelAr: string;
@@ -161,19 +167,19 @@ const PRICE_CATEGORIES: Array<{
     key: "buildings",
     labelAr: "المباني والاستخدام السكني",
     labelEn: "Buildings & residential",
-    color: "#1677b8",
+    color: CATEGORY_COLORS.buildings,
   },
   {
     key: "industrial",
     labelAr: "الأراضي الصناعية",
     labelEn: "Industrial land",
-    color: "#173f70",
+    color: CATEGORY_COLORS.industrial,
   },
   {
     key: "agricultural",
     labelAr: "الأراضي والأنشطة الزراعية",
     labelEn: "Agricultural land & activities",
-    color: "#38a8df",
+    color: CATEGORY_COLORS.agricultural,
   },
 ];
 
@@ -234,10 +240,17 @@ function CategoryPriceCard({
   ];
 
   return (
-    <article className="overflow-hidden rounded-xl border border-border bg-card/75 shadow-sm">
+    <article
+      className="overflow-hidden rounded-xl border-2 shadow-sm"
+      style={{
+        borderColor: `${category.color}70`,
+        background: `linear-gradient(155deg, ${category.color}18, var(--color-card) 46%)`,
+        boxShadow: `0 10px 28px ${category.color}18`,
+      }}
+    >
       <div
-        className="flex items-center justify-between gap-3 border-b border-border px-4 py-3"
-        style={{ background: `linear-gradient(135deg, ${category.color}24, transparent)` }}
+        className="flex items-center justify-between gap-3 border-b px-4 py-3"
+        style={{ borderColor: `${category.color}45`, background: `linear-gradient(135deg, ${category.color}32, ${category.color}0b)` }}
       >
         <div className="min-w-0">
           <h3 className="truncate text-sm font-bold text-foreground">
@@ -317,8 +330,15 @@ function BusinessPriceCard({
   const change = compactMoney(difference);
 
   return (
-    <article className="relative overflow-hidden rounded-xl border border-border bg-card shadow-[0_8px_24px_rgb(20_67_105/0.09)]" style={{ borderTopColor: color, borderTopWidth: 4 }}>
-      <div className="border-b border-border px-4 pb-4 pt-3" style={{ background: `linear-gradient(135deg, ${color}16, transparent 64%)` }}>
+    <article
+      className="relative overflow-hidden rounded-xl border-2 shadow-sm"
+      style={{
+        borderColor: `${color}75`,
+        background: `linear-gradient(155deg, ${color}1c, var(--color-card) 48%)`,
+        boxShadow: `0 12px 30px ${color}1c`,
+      }}
+    >
+      <div className="border-b px-4 pb-4 pt-3" style={{ borderColor: `${color}45`, background: `linear-gradient(135deg, ${color}38, ${color}0d 72%)` }}>
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-sm font-extrabold text-foreground">{label}</h3>
           <span className="rounded-full border px-2.5 py-1 text-[10px] font-extrabold" style={{ borderColor: `${color}45`, backgroundColor: `${color}12`, color }}>
@@ -337,8 +357,8 @@ function BusinessPriceCard({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-px bg-border">
-        <div className="bg-card px-4 py-3">
+      <div className="grid grid-cols-2 gap-px" style={{ backgroundColor: `${color}48` }}>
+        <div className="px-4 py-3" style={{ backgroundColor: `color-mix(in srgb, ${color} 8%, var(--color-card))` }}>
           <p className="text-[10px] font-bold text-muted-foreground">{lang === "ar" ? "خط الأساس 2016" : "2016 baseline"}</p>
           <p className="mt-1 flex flex-wrap items-baseline gap-x-1" dir="ltr">
             <strong className="text-base font-extrabold text-foreground tabular-nums">{baseline.value}</strong>
@@ -346,7 +366,7 @@ function BusinessPriceCard({
           </p>
           <p className="mt-1 whitespace-nowrap text-[9px] text-muted-foreground tabular-nums" dir="ltr">{formatNum(stats.total2016, lang, 0)}</p>
         </div>
-        <div className="bg-card px-4 py-3">
+        <div className="px-4 py-3" style={{ backgroundColor: `color-mix(in srgb, ${color} 8%, var(--color-card))` }}>
           <p className="text-[10px] font-bold text-muted-foreground">{lang === "ar" ? "الزيادة في القيمة" : "Value increase"}</p>
           <p className="mt-1 flex flex-wrap items-baseline gap-x-1" dir="ltr">
             <strong className="text-base font-extrabold tabular-nums" style={{ color }}>{difference >= 0 ? "+" : ""}{change.value}</strong>
@@ -356,7 +376,7 @@ function BusinessPriceCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 border-t border-border bg-[#f5f9fc] px-4 py-3 text-center">
+      <div className="grid grid-cols-2 border-t px-4 py-3 text-center" style={{ borderColor: `${color}45`, backgroundColor: `${color}16` }}>
         <div className="border-e border-border">
           <p className="text-[10px] font-bold text-muted-foreground">{lang === "ar" ? "النمو 2016–2026" : "Growth 2016–2026"}</p>
           <strong className="mt-1 block text-lg font-black tabular-nums" style={{ color }} dir="ltr">{growth >= 0 ? "+" : ""}{formatNum(growth, lang, 1)}%</strong>
@@ -384,7 +404,14 @@ function BusinessAreaMetric({
   lang: "ar" | "en";
 }) {
   return (
-    <div className="relative min-h-[104px] overflow-hidden rounded-lg border border-border bg-card px-3 py-3 text-center shadow-[0_4px_14px_rgb(20_67_105/0.07)]">
+    <div
+      className="relative min-h-[104px] overflow-hidden rounded-lg border-2 px-3 py-3 text-center"
+      style={{
+        borderColor: `${tone}65`,
+        background: `linear-gradient(145deg, ${tone}24, var(--color-card) 72%)`,
+        boxShadow: `0 7px 20px ${tone}18`,
+      }}
+    >
       <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: tone }} />
       <p className="min-h-8 text-[10px] font-extrabold leading-4 text-muted-foreground">{label}</p>
       <p className="mt-2 whitespace-nowrap text-[clamp(1.15rem,1.55vw,1.45rem)] font-black tracking-tight tabular-nums" style={{ color: tone }} dir="ltr" title={formatNum(value, lang, value >= 1000 ? 0 : 2)}>
@@ -598,29 +625,29 @@ function PricesPage() {
             label={lang === "ar" ? "إجمالي مساحة أراضي المباني" : "Total building-land area"}
             value={categoryStats.buildings.areaM2 / 1_000_000}
             unit={lang === "ar" ? "كم²" : "km²"}
-            tone="#1677b8"
+            tone={CATEGORY_COLORS.buildings}
             lang={lang}
           />
           <BusinessAreaMetric
             label={lang === "ar" ? "إجمالي مساحة الأراضي الصناعية" : "Total industrial-land area"}
             value={categoryStats.industrial.areaM2 / 1_000_000}
             unit={lang === "ar" ? "كم²" : "km²"}
-            tone="#173f70"
+            tone={CATEGORY_COLORS.industrial}
             lang={lang}
           />
           <BusinessAreaMetric
             label={lang === "ar" ? "إجمالي مساحة الأراضي الزراعية" : "Total agricultural-land area"}
             value={categoryStats.agricultural.areaM2 / 4_200.83}
             unit={lang === "ar" ? "فدان" : "feddan"}
-            tone="#38a8df"
+            tone={CATEGORY_COLORS.agricultural}
             lang={lang}
           />
         </div>
 
         <div className="grid gap-2 lg:grid-cols-3">
-          <BusinessPriceCard label={lang === "ar" ? "أراضي المباني" : "Building land"} stats={categoryStats.buildings} color="#1677b8" grandTotal2026={businessTotal2026} lang={lang} />
-          <BusinessPriceCard label={lang === "ar" ? "الأراضي الصناعية" : "Industrial land"} stats={categoryStats.industrial} color="#173f70" grandTotal2026={businessTotal2026} lang={lang} />
-          <BusinessPriceCard label={lang === "ar" ? "الأراضي الزراعية" : "Agricultural land"} stats={categoryStats.agricultural} color="#38a8df" grandTotal2026={businessTotal2026} lang={lang} />
+          <BusinessPriceCard label={lang === "ar" ? "أراضي المباني" : "Building land"} stats={categoryStats.buildings} color={CATEGORY_COLORS.buildings} grandTotal2026={businessTotal2026} lang={lang} />
+          <BusinessPriceCard label={lang === "ar" ? "الأراضي الصناعية" : "Industrial land"} stats={categoryStats.industrial} color={CATEGORY_COLORS.industrial} grandTotal2026={businessTotal2026} lang={lang} />
+          <BusinessPriceCard label={lang === "ar" ? "الأراضي الزراعية" : "Agricultural land"} stats={categoryStats.agricultural} color={CATEGORY_COLORS.agricultural} grandTotal2026={businessTotal2026} lang={lang} />
         </div>
       </section>
 

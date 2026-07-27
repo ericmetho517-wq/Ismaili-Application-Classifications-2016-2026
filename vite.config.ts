@@ -7,6 +7,10 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // This repository is deployed directly to Vercel. Force Nitro on so the
+  // production build emits the Vercel function and routing manifest instead
+  // of a Vite-only dist folder that Vercel cannot serve as a Start app.
+  nitro: { preset: "vercel" },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
