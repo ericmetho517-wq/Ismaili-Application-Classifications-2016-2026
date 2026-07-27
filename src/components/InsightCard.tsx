@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Lightbulb, TrendingDown, TrendingUp, AlertTriangle, Info } from "lucide-react";
+import { localizeDigits, useI18n } from "@/lib/i18n";
 
 type Tone = "positive" | "negative" | "warning" | "info";
 
@@ -21,6 +22,7 @@ export function InsightCard({
   tone?: Tone;
   metric?: string;
 }) {
+  const { lang } = useI18n();
   const t = toneMap[tone];
   const Icon = t.Icon;
   return (
@@ -35,10 +37,10 @@ export function InsightCard({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h4 className="min-w-0 text-xs font-semibold leading-snug text-foreground">{title}</h4>
+            <h4 className="min-w-0 text-sm font-extrabold leading-snug text-foreground sm:text-base">{title}</h4>
             {metric && (
-              <span className={`shrink-0 text-[11px] font-bold ${t.text}`} dir="ltr">
-                {metric}
+              <span className={`shrink-0 text-sm font-extrabold ${t.text}`} dir="ltr">
+                {localizeDigits(metric, lang)}
               </span>
             )}
           </div>

@@ -7,20 +7,20 @@ export function TopBar({ title, subtitle }: { title?: string; subtitle?: string 
   return (
     <header
       dir="ltr"
-      className="glass surface-hover mb-1.5 grid min-w-0 shrink-0 grid-cols-1 items-center gap-2 rounded-lg px-3 py-2 md:grid-cols-[minmax(150px,1fr)_minmax(0,3fr)_minmax(150px,1fr)] md:px-4"
+      className="glass surface-hover mb-2 grid min-w-0 shrink-0 grid-cols-1 items-center gap-2 rounded-lg px-3 py-2.5 md:grid-cols-[minmax(150px,1fr)_minmax(0,3fr)_minmax(150px,1fr)] md:px-5 md:py-3"
     >
       <div className="min-w-0 text-center md:col-start-2 md:row-start-1">
         {title ? (
           <h1
             dir="auto"
-            className="text-balance text-sm font-extrabold leading-tight text-foreground sm:text-base"
+            className="text-balance text-[clamp(1.3rem,1.8vw,1.65rem)] font-black leading-tight tracking-tight text-foreground"
           >
             {title}
           </h1>
         ) : (
           <h1
             dir="rtl"
-            className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-sm font-extrabold leading-tight text-foreground sm:text-base"
+            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[clamp(1.2rem,1.65vw,1.55rem)] font-black leading-tight tracking-tight text-foreground"
           >
             <span>{t.appName}</span>
             <span aria-hidden="true" className="text-[var(--brand)]">
@@ -31,7 +31,7 @@ export function TopBar({ title, subtitle }: { title?: string; subtitle?: string 
         )}
         <p
           dir="auto"
-          className="mx-auto mt-0.5 line-clamp-2 max-w-3xl text-[10px] leading-tight text-muted-foreground sm:text-[11px]"
+          className="mx-auto mt-1.5 line-clamp-2 max-w-4xl text-[13px] font-bold leading-snug text-muted-foreground sm:text-[15px]"
         >
           {subtitle ?? t.appSubtitle}
         </p>

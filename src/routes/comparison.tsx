@@ -23,14 +23,14 @@ import { FilterChip, applyMapFilter, landUseFilter, toggleFilter, type MapFilter
 export const Route = createFileRoute("/comparison")({
   head: () => ({
     meta: [
-      { title: "2016 vs 2026 Land-Use Comparison — Ismailia Geo Dashboard" },
-      { name: "description", content: "Side-by-side 2016 vs 2026 maps for Ismailia, with share-of-area comparison, deltas by sector, change tables and a movers leaderboard." },
-      { property: "og:title", content: "2016 vs 2026 Land-Use Comparison — Ismailia" },
-      { property: "og:description", content: "Dual maps, share comparison, deltas and movers leaderboard across Ismailia, 2016 vs 2026." },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/comparison" },
+      { title: "مقارنة استخدامات الأراضي 2016–2026 | طريق القاهرة–الإسماعيلية" },
+      { name: "description", content: "مقارنة مباشرة بين خرائط 2016 و2026 توضح تغير مساحات الاستخدامات العمرانية والزراعية والصناعية والمياه." },
+      { property: "og:title", content: "مقارنة استخدامات الأراضي بين 2016 و2026" },
+      { property: "og:description", content: "خريطتان متزامنتان ورسوم مقارنة وجداول توضح مقدار واتجاه التغير في كل استخدام للأرض." },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/comparison" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/comparison" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/comparison" }],
   }),
   component: ComparePage,
 });

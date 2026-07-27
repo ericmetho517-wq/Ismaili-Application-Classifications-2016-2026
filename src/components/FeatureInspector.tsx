@@ -34,7 +34,7 @@ export function FeatureInspector({ row }: { row?: DetailRow }) {
   return (
     <div className="h-full min-h-[220px] overflow-auto rounded-lg border border-border/70 p-3">
       <p className="text-xs text-muted-foreground">{lang === "ar" ? "العنصر المحدد" : "Selected feature"}</p>
-      <h4 className="mt-1 text-base font-bold text-foreground">{translateValue(row.name, lang)}</h4>
+      <h4 className="mt-1 text-lg font-black text-foreground">{translateValue(row.name, lang)}</h4>
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div className="rounded-md bg-foreground/5 p-2">
           <p className="text-[10px] text-muted-foreground">{t.common.area}</p>

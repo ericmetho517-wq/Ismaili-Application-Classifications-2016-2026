@@ -34,13 +34,18 @@ import {
 export const Route = createFileRoute("/prices")({
   head: () => ({
     meta: [
-      { title: "لوحة أسعار الأراضي 2016–2026 — الإسماعيلية" },
+      { title: "تحليل أسعار الأراضي 2016–2026 | طريق القاهرة–الإسماعيلية" },
       {
         name: "description",
         content:
-          "Detailed land-price dashboard comparing 2016 and 2026 parcel values and unit prices across Ismailia.",
+          "لوحة تفاعلية تقارن قيمة الأراضي وسعر المتر حسب نوع الاستخدام على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026.",
       },
+      { property: "og:title", content: "تحليل أسعار الأراضي 2016–2026 | طريق القاهرة–الإسماعيلية" },
+      { property: "og:description", content: "مقارنة مبسطة لقيمة الأراضي وسعر المتر ومعدلات الزيادة حسب الاستخدام بين 2016 و2026." },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/prices" },
+      { property: "og:type", content: "article" },
     ],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/prices" }],
   }),
   component: PricesPage,
 });
@@ -253,7 +258,7 @@ function CategoryPriceCard({
         style={{ borderColor: `${category.color}45`, background: `linear-gradient(135deg, ${category.color}32, ${category.color}0b)` }}
       >
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-bold text-foreground">
+          <h3 className="truncate text-base font-extrabold text-foreground">
             {lang === "ar" ? category.labelAr : category.labelEn}
           </h3>
           <p className="mt-0.5 text-[10px] text-muted-foreground">
@@ -272,8 +277,8 @@ function CategoryPriceCard({
         {rows.map(([label, value, unit]) => (
           <div key={label} className="flex items-center justify-between gap-3 py-2.5">
             <span className="text-[10px] text-muted-foreground sm:text-[11px]">{label}</span>
-            <span className="min-w-0 text-end text-xs font-bold tabular-nums text-foreground sm:text-sm">
-              <bdi>{value}</bdi> <small className="font-medium text-muted-foreground">{unit}</small>
+            <span className="inline-flex min-w-0 items-baseline gap-2 text-end text-xs font-bold tabular-nums text-foreground sm:text-sm" dir={lang === "ar" ? "rtl" : "ltr"}>
+              <bdi>{value}</bdi> <small className="font-bold text-muted-foreground">{unit}</small>
             </span>
           </div>
         ))}
@@ -340,16 +345,16 @@ function BusinessPriceCard({
     >
       <div className="border-b px-4 pb-4 pt-3" style={{ borderColor: `${color}45`, background: `linear-gradient(135deg, ${color}38, ${color}0d 72%)` }}>
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-extrabold text-foreground">{label}</h3>
+          <h3 className="text-base font-black text-foreground">{label}</h3>
           <span className="rounded-full border px-2.5 py-1 text-[10px] font-extrabold" style={{ borderColor: `${color}45`, backgroundColor: `${color}12`, color }}>
             {lang === "ar" ? "قيمة 2026" : "2026 value"}
           </span>
         </div>
-        <p className="mt-3 flex flex-wrap items-end gap-x-2 gap-y-1" dir="ltr">
+        <p className="mt-3 flex flex-wrap items-end gap-x-2 gap-y-1" dir={lang === "ar" ? "rtl" : "ltr"}>
           <strong className="whitespace-nowrap text-[clamp(1.55rem,2vw,2rem)] font-black leading-none tracking-[-0.04em] tabular-nums" style={{ color }}>
             {current.value}
           </strong>
-          <span className="pb-0.5 text-xs font-bold text-muted-foreground">{current.unit}</span>
+          <span className="pb-0.5 text-sm font-extrabold text-muted-foreground">{current.unit}</span>
         </p>
         <p className="mt-2 flex flex-wrap items-center gap-x-1 text-[10px] text-muted-foreground">
           <span>{lang === "ar" ? "القيمة الدقيقة:" : "Exact value:"}</span>
@@ -360,17 +365,17 @@ function BusinessPriceCard({
       <div className="grid grid-cols-2 gap-px" style={{ backgroundColor: `${color}48` }}>
         <div className="px-4 py-3" style={{ backgroundColor: `color-mix(in srgb, ${color} 8%, var(--color-card))` }}>
           <p className="text-[10px] font-bold text-muted-foreground">{lang === "ar" ? "خط الأساس 2016" : "2016 baseline"}</p>
-          <p className="mt-1 flex flex-wrap items-baseline gap-x-1" dir="ltr">
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2" dir={lang === "ar" ? "rtl" : "ltr"}>
             <strong className="text-base font-extrabold text-foreground tabular-nums">{baseline.value}</strong>
-            <span className="text-[9px] font-semibold text-muted-foreground">{baseline.unit}</span>
+            <span className="text-xs font-bold text-muted-foreground">{baseline.unit}</span>
           </p>
           <p className="mt-1 whitespace-nowrap text-[9px] text-muted-foreground tabular-nums" dir="ltr">{formatNum(stats.total2016, lang, 0)}</p>
         </div>
         <div className="px-4 py-3" style={{ backgroundColor: `color-mix(in srgb, ${color} 8%, var(--color-card))` }}>
           <p className="text-[10px] font-bold text-muted-foreground">{lang === "ar" ? "الزيادة في القيمة" : "Value increase"}</p>
-          <p className="mt-1 flex flex-wrap items-baseline gap-x-1" dir="ltr">
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2" dir={lang === "ar" ? "rtl" : "ltr"}>
             <strong className="text-base font-extrabold tabular-nums" style={{ color }}>{difference >= 0 ? "+" : ""}{change.value}</strong>
-            <span className="text-[9px] font-semibold text-muted-foreground">{change.unit}</span>
+            <span className="text-xs font-bold text-muted-foreground">{change.unit}</span>
           </p>
           <p className="mt-1 whitespace-nowrap text-[9px] text-muted-foreground tabular-nums" dir="ltr">{difference >= 0 ? "+" : ""}{formatNum(difference, lang, 0)}</p>
         </div>
@@ -413,11 +418,11 @@ function BusinessAreaMetric({
       }}
     >
       <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: tone }} />
-      <p className="min-h-8 text-[10px] font-extrabold leading-4 text-muted-foreground">{label}</p>
-      <p className="mt-2 whitespace-nowrap text-[clamp(1.15rem,1.55vw,1.45rem)] font-black tracking-tight tabular-nums" style={{ color: tone }} dir="ltr" title={formatNum(value, lang, value >= 1000 ? 0 : 2)}>
-        {formatNum(value, lang, value >= 1000 ? 0 : 2)}
+      <p className="min-h-10 text-sm font-extrabold leading-snug text-foreground/90">{label}</p>
+      <p className="mt-2 flex items-baseline justify-center gap-2 whitespace-nowrap" dir={lang === "ar" ? "rtl" : "ltr"} title={formatNum(value, lang, value >= 1000 ? 0 : 2)}>
+        <bdi className="text-[clamp(1.15rem,1.55vw,1.45rem)] font-black tracking-tight tabular-nums" style={{ color: tone }}>{formatNum(value, lang, value >= 1000 ? 0 : 2)}</bdi>
+        <span className="text-xs font-extrabold text-muted-foreground">{unit}</span>
       </p>
-      <p className="mt-1 text-[10px] font-bold text-muted-foreground">{unit}</p>
     </div>
   );
 }
@@ -585,7 +590,7 @@ function PricesPage() {
       <section className="mb-2 rounded-xl border border-border bg-card/35 p-2.5">
         <div className="mb-2 flex flex-wrap items-end justify-between gap-2 border-b border-border pb-2">
           <div>
-            <h2 className="text-sm font-extrabold text-foreground">
+            <h2 className="text-base font-black text-foreground sm:text-lg">
               {lang === "ar" ? "الملخص التنفيذي للأسعار والمساحات" : "Executive price and area summary"}
             </h2>
             <p className="mt-0.5 text-[10px] text-muted-foreground">

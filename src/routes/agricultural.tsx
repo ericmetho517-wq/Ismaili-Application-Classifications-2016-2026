@@ -22,14 +22,14 @@ import { FilterChip, applyMapFilter, bucketFilter, fieldFilter, rowFilter, toggl
 export const Route = createFileRoute("/agricultural")({
   head: () => ({
     meta: [
-      { title: "Agricultural Land Analytics â€” Ismailia Geo Dashboard" },
-      { name: "description", content: "Agricultural plot-size distribution in feddan, fragmentation metrics, largest plots, and 2016 vs 2026 expansion across Ismailia's farmland." },
-      { property: "og:title", content: "Agricultural Land Analytics â€” Ismailia" },
-      { property: "og:description", content: "Feddan-level distribution, fragmentation and top plots across Ismailia agricultural land, 2016 vs 2026." },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/agricultural" },
+      { title: "تحليل الأراضي الزراعية | طريق القاهرة–الإسماعيلية الصحراوي" },
+      { name: "description", content: "تحليل مساحات الأراضي الزراعية وأحجام القطع ودرجة التركز والتغير بين 2016 و2026 على طريق القاهرة–الإسماعيلية الصحراوي." },
+      { property: "og:title", content: "تحليل الأراضي الزراعية | طريق القاهرة–الإسماعيلية الصحراوي" },
+      { property: "og:description", content: "خرائط ورسوم توضح مساحات الزراعة وأحجام القطع وأكبر الأراضي والتغير بين 2016 و2026." },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/agricultural" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/agricultural" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/agricultural" }],
   }),
   component: AgriPage,
 });

@@ -16,11 +16,11 @@ export function Panel({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className={`glass surface-hover flex min-h-0 min-w-0 max-w-full flex-col rounded-xl p-2.5 ${className}`}
+      className={`glass colorful-card surface-hover flex min-h-0 min-w-0 max-w-full flex-col rounded-xl p-2.5 ${className}`}
     >
       {(title || right) && (
         <header className="section-divider relative z-10 mb-2 flex shrink-0 items-center justify-between gap-2 border-b pb-2">
-          {title && <h3 className="text-xs font-bold text-foreground/95">{title}</h3>}
+          {title && <h3 className="text-sm font-extrabold leading-snug text-foreground sm:text-base">{title}</h3>}
           {right}
         </header>
       )}

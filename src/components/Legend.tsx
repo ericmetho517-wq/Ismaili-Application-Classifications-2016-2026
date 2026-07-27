@@ -10,7 +10,7 @@ export function Legend({
 }) {
   return (
     <div className="space-y-2">
-      {title && <p className="text-xs font-semibold text-foreground">{title}</p>}
+      {title && <p className="text-sm font-extrabold text-foreground">{title}</p>}
       <ul className="space-y-1.5">
         {items.map((it, i) => (
           <li key={i} className="flex items-center gap-2 text-xs">

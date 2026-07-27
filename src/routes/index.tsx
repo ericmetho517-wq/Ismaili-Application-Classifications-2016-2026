@@ -40,14 +40,14 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Ismailia Geo Dashboard — Land Use & Urban Change Analytics 2016–2026" },
-      { name: "description", content: "Interactive overview of Ismailia land use: KPI snapshot, live map, and 2016 vs 2026 comparison across urban, agricultural, industrial and water sectors." },
-      { property: "og:title", content: "Ismailia Geo Dashboard — Overview" },
-      { property: "og:description", content: "KPI snapshot and live map comparing 2016 vs 2026 land use across Ismailia's development axis." },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/" },
+      { title: "طريق القاهرة–الإسماعيلية الصحراوي | لوحة التحليل الجغرافي 2016–2026" },
+      { name: "description", content: "لوحة تفاعلية مبسطة تعرض خرائط استخدامات الأراضي، والتغير العمراني والزراعي والصناعي، وأسعار الأراضي على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026." },
+      { property: "og:title", content: "طريق القاهرة–الإسماعيلية الصحراوي | تحليل التغير 2016–2026" },
+      { property: "og:description", content: "خرائط ومؤشرات ورسوم بيانية تفاعلية تشرح استخدامات الأراضي والتغيرات العمرانية والزراعية والصناعية وأسعار الأراضي بين 2016 و2026." },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/" }],
   }),
   component: OverviewPage,
 });

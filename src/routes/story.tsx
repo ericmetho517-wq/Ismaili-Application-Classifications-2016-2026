@@ -10,22 +10,22 @@ import { ChangeStoryCarousel } from "@/components/ChangeStoryCarousel";
 export const Route = createFileRoute("/story")({
   head: () => ({
     meta: [
-      { title: "Change Story 2016 vs 2026 — Ismailia Geo Dashboard" },
+      { title: "قصة التغير 2016–2026 | طريق القاهرة–الإسماعيلية الصحراوي" },
       {
         name: "description",
         content:
-          "Swipe-based story dashboard explaining the clearest land-use changes in Ismailia between 2016 and 2026.",
+          "عرض مبسط وتفاعلي يشرح أبرز تغيرات استخدامات الأراضي على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026.",
       },
-      { property: "og:title", content: "Change Story 2016 vs 2026 — Ismailia" },
+      { property: "og:title", content: "قصة التغير 2016–2026 | طريق القاهرة–الإسماعيلية" },
       {
         property: "og:description",
         content:
-          "A professional swipe dashboard for urban, agricultural, industrial, vacant land, water and military land changes.",
+          "قصة مرئية تشرح التغيرات العمرانية والزراعية والصناعية والأراضي الفضاء والمياه خطوة بخطوة.",
       },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/story" },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/story" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/story" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/story" }],
   }),
   component: StoryPage,
 });
@@ -86,7 +86,7 @@ function StorySummaryItem({
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-semibold text-muted-foreground">{label}</p>
+        <p className="truncate text-sm font-extrabold text-foreground/90">{label}</p>
         <p className="mt-0.5 text-lg font-extrabold text-foreground" dir="ltr">
           {value} {suffix ? <span className="text-xs text-muted-foreground">{suffix}</span> : null}
         </p>

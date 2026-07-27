@@ -1,5 +1,5 @@
 import { Activity, BarChart3, Gauge, Maximize2, Ruler, Sigma } from "lucide-react";
-import { formatNum, useI18n } from "@/lib/i18n";
+import { formatNum, localizeDigits, useI18n } from "@/lib/i18n";
 import type { Metric } from "@/lib/analytics";
 import { translateMetricLabel, unitLabel } from "@/lib/labels";
 
@@ -26,7 +26,7 @@ export function MetricStrip({ metrics, compact = false }: { metrics: Metric[]; c
         const display =
           typeof metric.value === "number"
             ? formatNum(metric.value, lang, metric.value > 100 ? 0 : 2)
-            : translateMetricLabel(metric.value, lang);
+            : localizeDigits(translateMetricLabel(metric.value, lang), lang);
         return (
           <div
             key={`${metric.label}-${index}`}
@@ -35,12 +35,12 @@ export function MetricStrip({ metrics, compact = false }: { metrics: Metric[]; c
             <div className="relative flex items-start justify-center gap-2">
               <Icon className="absolute start-0 top-0 h-4 w-4 shrink-0 text-foreground/70" />
               <div className="min-w-0 flex-1 px-7 text-center">
-                <p className="line-clamp-2 min-h-7 text-[11px] font-semibold leading-tight text-muted-foreground">
+                <p className="line-clamp-2 min-h-10 text-[13px] font-extrabold leading-snug text-foreground/90 sm:text-sm">
                   {translateMetricLabel(metric.label, lang)}
                 </p>
-                <p className="mt-0.5 whitespace-nowrap text-[clamp(0.9rem,1.15vw,1rem)] font-extrabold tracking-tight text-foreground tabular-nums" dir="ltr" title={String(display)}>
+                <p className="mt-1 flex items-baseline justify-center gap-2 whitespace-nowrap text-[clamp(1rem,1.25vw,1.15rem)] font-black tracking-tight text-foreground tabular-nums" dir={lang === "ar" ? "rtl" : "ltr"} title={String(display)}>
                   <bdi>{display}</bdi>
-                  {metric.unit && <span className="ms-1 text-[10px] font-medium text-muted-foreground">{unitLabel(metric.unit, lang)}</span>}
+                  {metric.unit && <span className="text-xs font-extrabold tracking-normal text-muted-foreground">{unitLabel(metric.unit, lang)}</span>}
                 </p>
               </div>
             </div>

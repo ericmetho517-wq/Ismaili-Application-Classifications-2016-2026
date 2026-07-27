@@ -14,25 +14,42 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ismailia Geo Dashboard | لوحة الإسماعيلية الجغرافية" },
+      { title: "طريق القاهرة–الإسماعيلية الصحراوي | لوحة التحليل الجغرافي 2016–2026" },
       {
         name: "description",
         content:
-          "Interactive geospatial dashboard for Ismailia, Egypt — compare 2016 vs 2026 land use across urban, agricultural, industrial, and water sectors along the development axis.",
+          "لوحة تفاعلية لتحليل استخدامات الأراضي والتغير العمراني والزراعي والصناعي وأسعار الأراضي على طريق القاهرة–الإسماعيلية الصحراوي، مع خرائط ومؤشرات ومقارنة بين 2016 و2026.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Ismailia Geo Dashboard" },
+      { property: "og:locale", content: "ar_EG" },
+      { property: "og:site_name", content: "لوحة طريق القاهرة–الإسماعيلية الصحراوي" },
+      { property: "og:title", content: "طريق القاهرة–الإسماعيلية الصحراوي | تحليل التغير 2016–2026" },
+      {
+        property: "og:description",
+        content:
+          "استكشف خرائط استخدامات الأراضي، والنمو العمراني والزراعي والصناعي، وأسعار الأراضي، مع مقارنة واضحة بين عامي 2016 و2026.",
+      },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "طريق القاهرة–الإسماعيلية الصحراوي | لوحة التحليل الجغرافي" },
+      {
+        name: "twitter:description",
+        content: "خرائط ومؤشرات تفاعلية لاستخدامات الأراضي والتغيرات والأسعار، مع مقارنة 2016–2026.",
+      },
       {
         property: "og:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/XqELMWNTW3PhFTUX3uHrFg8C7x22/social-images/social-1780385998381-OIP.webp",
+        content: "https://ismailia-geo-dashboard.vercel.app/social-share-dashboard.jpg",
       },
+      { property: "og:image:secure_url", content: "https://ismailia-geo-dashboard.vercel.app/social-share-dashboard.jpg" },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "خريطة تحليلية لاستخدامات الأراضي على طريق القاهرة–الإسماعيلية الصحراوي" },
       {
         name: "twitter:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/XqELMWNTW3PhFTUX3uHrFg8C7x22/social-images/social-1780385998381-OIP.webp",
+        content: "https://ismailia-geo-dashboard.vercel.app/social-share-dashboard.jpg",
       },
+      { name: "twitter:image:alt", content: "خريطة تحليلية لاستخدامات الأراضي على طريق القاهرة–الإسماعيلية الصحراوي" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

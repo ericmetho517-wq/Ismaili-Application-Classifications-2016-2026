@@ -168,7 +168,7 @@ export function HBarUsageChart({
           contentStyle={tooltipStyle}
           formatter={(v: any, _n, p: any) => {
             const km = Number(v);
-            const pct = ((km / total) * 100).toFixed(1);
+            const pct = formatNum((km / total) * 100, lang, 1);
             return [`${formatNum(km, lang)} km² (${pct}%)`, p?.payload?.label];
           }}
         />
@@ -189,7 +189,7 @@ export function HBarUsageChart({
             content={(props: any) => {
               const { x, y, width, height, value } = props;
               const km = Number(value);
-              const pct = ((km / total) * 100).toFixed(1);
+              const pct = formatNum((km / total) * 100, lang, 1);
               const text = `${formatNum(km, lang)} km² · ${pct}%`;
               return (
                 <text
@@ -254,7 +254,7 @@ export function BarUsageChart({
           tick={{ fill: chartTextColor, fontSize: 10 }}
           domain={[0, 100]}
           ticks={[0, 25, 50, 75, 100]}
-          tickFormatter={(v) => `${v}%`}
+          tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
         />
         <Tooltip
           contentStyle={tooltipStyle}
@@ -492,7 +492,7 @@ export function ChangeTable({
                   {(r.delta >= 0 ? "+" : "") + formatNum(r.delta, lang)}
                 </td>
                 <td className={`py-1.5 pe-1 text-end font-bold ${tone}`} dir="ltr">
-                  {(r.pct >= 0 ? "+" : "") + r.pct.toFixed(1)}%
+                  {(r.pct >= 0 ? "+" : "") + formatNum(r.pct, lang, 1)}%
                 </td>
               </tr>
             );
@@ -549,7 +549,7 @@ export function PercentBarChart({
           type="number"
           domain={[0, 100]}
           ticks={[0, 25, 50, 75, 100]}
-          tickFormatter={(v) => `${v}%`}
+          tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
           tick={{ fill: chartTextColor, fontSize: 9 }}
         />
         <YAxis
@@ -596,7 +596,7 @@ export function PercentBarChart({
                   dominantBaseline="middle"
                   direction="ltr"
                 >
-                  {Number(value).toFixed(Number(value) >= 10 ? 0 : 1)}%
+                  {formatNum(Number(value), lang, Number(value) >= 10 ? 0 : 1)}%
                 </text>
               );
             }}
@@ -782,7 +782,7 @@ export function ShareCompareChart({
                   <button
                     key={segment.key}
                     type="button"
-                    title={`${segment.label}: ${segment.pct.toFixed(1)}% - ${formatNum(segment.area, lang)} km2`}
+                    title={`${segment.label}: ${formatNum(segment.pct, lang, 1)}% - ${formatNum(segment.area, lang)} km2`}
                     onClick={() =>
                       canSelect ? onSelect({ name: segment.key, area_km2: segment.area, count: 0 }) : undefined
                     }
@@ -797,7 +797,7 @@ export function ShareCompareChart({
                   >
                     {segment.pct >= 8 && (
                       <span className="truncate px-1 drop-shadow" dir="ltr">
-                        {segment.pct.toFixed(segment.pct >= 10 ? 0 : 1)}%
+                        {formatNum(segment.pct, lang, segment.pct >= 10 ? 0 : 1)}%
                       </span>
                     )}
                   </button>
@@ -859,7 +859,7 @@ export function MoversBoard({
         <span className="truncate">{r.label}</span>
       </span>
       <span className={`text-end font-bold ${tone}`} dir="ltr">
-        {(r.pct >= 0 ? "+" : "") + r.pct.toFixed(0)}%
+        {(r.pct >= 0 ? "+" : "") + formatNum(r.pct, lang, 0)}%
       </span>
     </li>
   );
@@ -987,6 +987,7 @@ export function RadialGauge({
   max?: number;
   suffix?: string;
 }) {
+  const { lang } = useI18n();
   const v = Math.max(0, Math.min(max, value));
   const data = [{ name: label ?? "", value: v, fill: color }];
   return (
@@ -1006,7 +1007,7 @@ export function RadialGauge({
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-bold text-foreground" dir="ltr">
-          {v.toFixed(v < 10 ? 1 : 0)}
+          {formatNum(v, lang, v < 10 ? 1 : 0)}
           {suffix}
         </span>
         {label && <span className="mt-0.5 text-[11px] text-muted-foreground">{label}</span>}
@@ -1176,20 +1177,20 @@ export function LorenzCurveChart({
           dataKey="x"
           type="number"
           domain={[0, 100]}
-          tickFormatter={(v) => `${v}%`}
+          tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
           tick={{ fill: chartTextColor, fontSize: 10 }}
           label={{ value: xLabel, fill: chartTextColor, fontSize: 10, position: "insideBottom", offset: -8 }}
         />
         <YAxis
           domain={[0, 100]}
-          tickFormatter={(v) => `${v}%`}
+          tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
           tick={{ fill: chartTextColor, fontSize: 10 }}
           label={{ value: yLabel, fill: chartTextColor, fontSize: 10, angle: -90, position: "insideLeft" }}
         />
         <Tooltip
           contentStyle={tooltipStyle}
           formatter={(v: any, n: any) => [`${formatNum(Number(v), lang, 1)}%`, n === "y" ? yLabel : xLabel]}
-          labelFormatter={(l) => `${xLabel}: ${l}%`}
+          labelFormatter={(l) => `${xLabel}: ${formatNum(Number(l), lang, 1)}%`}
         />
         <Area type="monotone" dataKey="ref" stroke={chartRestColor} strokeDasharray="4 4" fill="transparent" />
         <Area type="monotone" dataKey="y" stroke={color} strokeWidth={2} fill="url(#lorenz)" />
@@ -1214,6 +1215,7 @@ export function DonutKPI({
   height?: number;
   suffix?: string;
 }) {
+  const { lang } = useI18n();
   const pct = total > 0 ? (value / total) * 100 : 0;
   const data = [
     { name: "v", value: pct, fill: color },
@@ -1232,7 +1234,7 @@ export function DonutKPI({
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-bold text-foreground" dir="ltr">
-          {pct.toFixed(pct < 10 ? 2 : 1)}
+          {formatNum(pct, lang, pct < 10 ? 2 : 1)}
           {suffix}
         </span>
         {label && <span className="mt-0.5 text-center text-[11px] text-muted-foreground">{label}</span>}

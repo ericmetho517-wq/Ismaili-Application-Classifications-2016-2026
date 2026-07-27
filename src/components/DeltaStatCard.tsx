@@ -53,13 +53,13 @@ export function DeltaStatCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2, scale: 1.005 }}
       transition={{ type: "spring", stiffness: 200, damping: 18 }}
-      className={`glass surface-hover relative overflow-hidden rounded-xl border bg-gradient-to-br ${accentMap[accent]} px-3 py-2.5`}
+      className={`glass colorful-card surface-hover relative overflow-hidden rounded-xl border bg-gradient-to-br ${accentMap[accent]} px-3 py-2.5`}
     >
       <div className="relative flex items-center justify-center gap-2">
         {icon && (
-          <div className="absolute start-0 rounded-lg border border-border bg-card p-1.5 text-[var(--brand)] shadow-sm shrink-0">{icon}</div>
+          <div className="absolute start-0 shrink-0 rounded-lg border border-[var(--card-accent)]/30 bg-card/80 p-1.5 text-[var(--card-accent)] shadow-sm">{icon}</div>
         )}
-        <p className="min-h-7 min-w-0 flex-1 px-9 text-center text-xs font-extrabold leading-tight text-foreground line-clamp-2">
+        <p className="min-h-10 min-w-0 flex-1 px-9 text-center text-sm font-black leading-snug text-foreground line-clamp-2">
           {label}
         </p>
       </div>

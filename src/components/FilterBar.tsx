@@ -26,13 +26,13 @@ export function FilterBar({
       animate={{ opacity: 1, y: 0 }}
       className="glass mb-4 flex flex-wrap items-center gap-3 rounded-xl p-3"
     >
-      <div className="flex items-center gap-2 text-xs font-semibold text-[var(--brand)]">
+      <div className="flex items-center gap-2 text-sm font-extrabold text-[var(--brand)]">
         <Filter className="h-4 w-4" />
         {t.filters.title}
       </div>
       {filters.map((f) => (
         <div key={f.key} className="flex items-center gap-2">
-          <label className="text-[11px] text-muted-foreground">{f.label}</label>
+          <label className="text-sm font-bold text-foreground/85">{f.label}</label>
           <select
             value={values[f.key] ?? "__all__"}
             onChange={(e) => onChange(f.key, e.target.value)}

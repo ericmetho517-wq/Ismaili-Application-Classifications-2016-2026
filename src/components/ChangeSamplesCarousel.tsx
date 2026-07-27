@@ -346,7 +346,7 @@ function SampleMap({
     <div className="min-h-[380px] rounded-lg border border-border/70 bg-foreground/[0.03] p-2">
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm font-extrabold text-foreground">{yearTitle}</h3>
+          <h3 className="text-base font-black text-foreground">{yearTitle}</h3>
           <p className="text-[10px] text-muted-foreground">{layerLabel}</p>
         </div>
         <span className="rounded-md border border-border bg-background/75 px-2 py-1 text-[10px] font-semibold text-foreground shadow-sm backdrop-blur">

@@ -7,22 +7,22 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/change-samples")({
   head: () => ({
     meta: [
-      { title: "Close Change Samples 2016 vs 2026 — Ismailia Geo Dashboard" },
+      { title: "عينات مكانية للتغير 2016–2026 | طريق القاهرة–الإسماعيلية" },
       {
         name: "description",
         content:
-          "Close-zoom swipe samples comparing local land-use changes across Ismailia between 2016 and 2026.",
+          "عينات مكانية مكبرة تقارن تغيرات استخدامات الأراضي على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026.",
       },
-      { property: "og:title", content: "Close Change Samples 2016 vs 2026 — Ismailia" },
+      { property: "og:title", content: "عينات مكانية للتغير بين 2016 و2026" },
       {
         property: "og:description",
         content:
-          "Thirty filterable close-up samples with synchronized 2016 and 2026 maps for urban, agricultural, industrial and water changes.",
+          "عينات خرائط متزامنة ومكبرة توضح التغيرات العمرانية والزراعية والصناعية والمائية بصورة سهلة.",
       },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/change-samples" },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/change-samples" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/change-samples" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/change-samples" }],
   }),
   component: ChangeSamplesPage,
 });

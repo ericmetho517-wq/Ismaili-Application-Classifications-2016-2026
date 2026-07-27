@@ -22,14 +22,14 @@ import { FilterChip, applyMapFilter, bucketFilter, fieldFilter, rowFilter, toggl
 export const Route = createFileRoute("/industrial")({
   head: () => ({
     meta: [
-      { title: "Industrial Zones Analytics â€” Ismailia Geo Dashboard" },
-      { name: "description", content: "Industrial facility size classes, SME base on the development axis, top facilities, and 2016 vs 2026 industrial expansion across Ismailia." },
-      { property: "og:title", content: "Industrial Zones Analytics â€” Ismailia" },
-      { property: "og:description", content: "Facility size classes, SME share and top industrial sites across Ismailia, 2016 vs 2026." },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/industrial" },
+      { title: "تحليل المناطق الصناعية | طريق القاهرة–الإسماعيلية الصحراوي" },
+      { name: "description", content: "تحليل المنشآت والمناطق الصناعية وأحجامها ونموها على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026." },
+      { property: "og:title", content: "تحليل المناطق الصناعية | طريق القاهرة–الإسماعيلية الصحراوي" },
+      { property: "og:description", content: "خرائط ومؤشرات توضح أحجام المنشآت الصناعية وأهم المواقع والتوسع الصناعي بين 2016 و2026." },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/industrial" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/industrial" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/industrial" }],
   }),
   component: IndustrialPage,
 });

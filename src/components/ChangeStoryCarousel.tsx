@@ -95,7 +95,7 @@ export function ChangeStoryCarousel({ summary }: { summary: Summary }) {
           const active = activeIndex === index;
           const filter = landUseFilter(label, ["Land_Cover2016", "Land_Cover2026"], slide.rawName);
           const syncGroup = `story-${slide.key}`;
-          const pctLabel = `${slide.pct >= 0 ? "+" : ""}${slide.pct.toFixed(1)}%`;
+          const pctLabel = `${slide.pct >= 0 ? "+" : ""}${formatNum(slide.pct, lang, 1)}%`;
           const deltaLabel = `${slide.delta >= 0 ? "+" : ""}${formatNum(slide.delta, lang)} ${t.stats.km2}`;
 
           return (
@@ -296,7 +296,7 @@ function StoryMap({
   return (
     <div className="min-h-[260px] rounded-lg border border-border/70 bg-foreground/[0.03] p-2">
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <h3 className="text-xs font-bold text-foreground">{title}</h3>
+        <h3 className="text-base font-extrabold text-foreground">{title}</h3>
         <span className="text-[10px] text-muted-foreground">{layerLabel}</span>
       </div>
       {active ? (

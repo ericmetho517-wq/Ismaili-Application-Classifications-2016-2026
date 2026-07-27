@@ -167,7 +167,10 @@ function formatValue(value: unknown, digits = 3) {
   if (value === null || value === undefined || value === "") return "";
   const n = typeof value === "number" ? value : Number(value);
   if (Number.isFinite(n) && String(value).trim?.() !== "") {
-    return n.toLocaleString(undefined, { maximumFractionDigits: digits });
+    const isArabic = typeof document !== "undefined" && document.documentElement.lang === "ar";
+    return n.toLocaleString(isArabic ? "ar-EG-u-nu-arab" : "en-US-u-nu-latn", {
+      maximumFractionDigits: digits,
+    });
   }
   return String(value);
 }
@@ -991,7 +994,7 @@ export function MapView(props: MapViewProps) {
             <div className="glass surface-hover flex max-h-full w-full min-h-0 flex-col overflow-hidden rounded-xl border p-3">
               <div className="mb-2 flex items-center gap-2">
                 <MapIcon className="h-3.5 w-3.5 text-[var(--brand)]" />
-                <p className="text-xs font-semibold text-foreground">{t.map.layers}</p>
+                <p className="text-sm font-extrabold text-foreground">{t.map.layers}</p>
               </div>
               <ul className="min-h-0 space-y-1.5 overflow-y-auto pe-1">
                 {layers.map((l) => (
@@ -1039,7 +1042,7 @@ export function MapView(props: MapViewProps) {
                     : "w-[min(210px,calc(100vw-2.25rem))]"
                 }`}
               >
-                <p className="text-xs font-extrabold text-foreground">{props.legendTitle ?? t.map.legend}</p>
+                <p className="text-sm font-black text-foreground">{props.legendTitle ?? t.map.legend}</p>
                 {props.legendHint && (
                   <p className="mt-1 text-[9px] font-semibold leading-4 text-muted-foreground">{props.legendHint}</p>
                 )}

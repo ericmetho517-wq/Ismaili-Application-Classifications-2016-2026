@@ -43,22 +43,22 @@ import {
 export const Route = createFileRoute("/urban")({
   head: () => ({
     meta: [
-      { title: "Urban Growth Analytics â€” Ismailia Geo Dashboard" },
+      { title: "تحليل النمو العمراني | طريق القاهرة–الإسماعيلية الصحراوي" },
       {
         name: "description",
         content:
-          "Urban footprint expansion in Ismailia: building size distribution, density hotspots, top blocks, and 2016 vs 2026 growth on the development axis.",
+          "تحليل مبسط للنمو العمراني وأحجام المباني ومناطق الكثافة على طريق القاهرة–الإسماعيلية الصحراوي بين 2016 و2026.",
       },
-      { property: "og:title", content: "Urban Growth Analytics â€” Ismailia" },
+      { property: "og:title", content: "تحليل النمو العمراني | طريق القاهرة–الإسماعيلية الصحراوي" },
       {
         property: "og:description",
         content:
-          "Footprint distribution, density hotspots and top urban blocks across Ismailia, 2016 vs 2026.",
+          "خرائط ومؤشرات توضح توسع العمران وأحجام المباني ومناطق الكثافة بين 2016 و2026.",
       },
-      { property: "og:url", content: "https://ismailia-insight-hub.lovable.app/urban" },
+      { property: "og:url", content: "https://ismailia-geo-dashboard.vercel.app/urban" },
       { property: "og:type", content: "article" },
     ],
-    links: [{ rel: "canonical", href: "https://ismailia-insight-hub.lovable.app/urban" }],
+    links: [{ rel: "canonical", href: "https://ismailia-geo-dashboard.vercel.app/urban" }],
   }),
   component: UrbanPage,
 });

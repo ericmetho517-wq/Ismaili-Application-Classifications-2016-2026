@@ -179,7 +179,7 @@ export type Dict = {
 
 export const dict: Record<Lang, Dict> = {
   ar: {
-    appName: "لوحة الإسماعيلية الجغرافية",
+    appName: "طريق القاهرة الإسماعيلية الصحراوي",
     appSubtitle: "نظام مؤشرات الأراضي والتغيرات العمرانية والزراعية والصناعية",
     nav: {
       overview: "نظرة عامة",
@@ -416,7 +416,7 @@ export const dict: Record<Lang, Dict> = {
     },
   },
   en: {
-    appName: "Ismailia Geo Dashboard",
+    appName: "Cairo–Ismailia Desert Road",
     appSubtitle: "Land use indicators – urban, agricultural & industrial change",
     nav: {
       overview: "Overview",
@@ -668,12 +668,21 @@ export const LangContext = createContext<{
 
 export const useI18n = () => useContext(LangContext);
 
-export function formatNum(n: number, _lang: Lang, digits = 2) {
+export function localizeDigits(value: string | number, lang: Lang) {
+  const text = String(value);
+  if (lang !== "ar") return text;
+  const arabicDigits = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  return text
+    .replace(/\d/g, (digit) => arabicDigits[Number(digit)])
+    .replace(/,/g, "٬")
+    .replace(/\./g, "٫");
+}
+
+export function formatNum(n: number, lang: Lang, digits = 2) {
   if (n === null || n === undefined || !Number.isFinite(n)) return "—";
   const normalized = Object.is(n, -0) ? 0 : n;
 
-  // Keep figures in Latin digits so signs, separators and units stay stable in RTL layouts.
-  return new Intl.NumberFormat("en-US-u-nu-latn", {
+  return new Intl.NumberFormat(lang === "ar" ? "ar-EG-u-nu-arab" : "en-US-u-nu-latn", {
     minimumFractionDigits: 0,
     maximumFractionDigits: digits,
     useGrouping: true,

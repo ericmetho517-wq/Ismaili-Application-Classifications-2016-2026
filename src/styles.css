@@ -219,6 +219,33 @@
     transform 180ms ease;
 }
 
+/* Give repeated dashboard cards their own tint while keeping text contrast high. */
+.colorful-card {
+  --card-accent: #2563a6;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--card-accent) 32%, white), transparent 52%),
+    linear-gradient(135deg, color-mix(in srgb, var(--card-accent) 8%, var(--glass-start)), color-mix(in srgb, var(--card-accent) 19%, var(--glass-end)));
+  border-color: color-mix(in srgb, var(--card-accent) 58%, var(--glass-border));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--card-accent) 22%, var(--glass-shadow)),
+    0 1px 0 var(--glass-inner-top) inset,
+    0 -1px 0 color-mix(in srgb, var(--card-accent) 26%, transparent) inset;
+}
+
+:where(.grid, .flex) > .colorful-card:nth-child(6n + 1) { --card-accent: #2563a6; }
+:where(.grid, .flex) > .colorful-card:nth-child(6n + 2) { --card-accent: #0e9f8c; }
+:where(.grid, .flex) > .colorful-card:nth-child(6n + 3) { --card-accent: #7c3aed; }
+:where(.grid, .flex) > .colorful-card:nth-child(6n + 4) { --card-accent: #d97706; }
+:where(.grid, .flex) > .colorful-card:nth-child(6n + 5) { --card-accent: #db2777; }
+:where(.grid, .flex) > .colorful-card:nth-child(6n) { --card-accent: #0891b2; }
+
+.colorful-card.surface-hover:hover {
+  border-color: color-mix(in srgb, var(--card-accent) 78%, var(--glass-border));
+  box-shadow:
+    0 20px 44px color-mix(in srgb, var(--card-accent) 30%, var(--glass-shadow)),
+    0 1px 0 var(--glass-inner-top) inset;
+}
+
 .surface-hover:hover {
   border-color: color-mix(in oklch, var(--color-brand) 48%, var(--glass-border));
   background-color: var(--surface-hover);
