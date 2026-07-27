@@ -34,7 +34,7 @@ function ChangeSamplesPage() {
     <>
       <TopBar title={t.changeSamples.title} subtitle={t.changeSamples.subtitle} />
       <ChangeSamplesSummary />
-      <Panel title={t.changeSamples.carouselTitle} className="min-h-0">
+      <Panel title={t.changeSamples.carouselTitle} className="min-h-0 !p-1.5" fitContent>
         <ChangeSamplesCarousel />
       </Panel>
     </>

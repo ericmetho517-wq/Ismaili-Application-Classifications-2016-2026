@@ -57,7 +57,7 @@ function StoryPage() {
         />
       </div>
 
-      <Panel title={t.story.carouselTitle} className="min-h-0">
+      <Panel title={t.story.carouselTitle} className="min-h-0" fitContent>
         {isLoading && (
           <div className="flex min-h-[520px] items-center justify-center text-sm text-muted-foreground">
             {t.common.loading}

@@ -82,7 +82,7 @@ export function ChangeStoryCarousel({ summary }: { summary: Summary }) {
       className="relative min-h-0 pb-16"
       dir={dir}
     >
-      <CarouselContent className="-ml-2">
+      <CarouselContent className="-ms-2">
         {slides.map((slide, index) => {
           const copy = t.story.slides[slide.key];
           const Icon = slide.icon;
@@ -99,7 +99,7 @@ export function ChangeStoryCarousel({ summary }: { summary: Summary }) {
           const deltaLabel = `${slide.delta >= 0 ? "+" : ""}${formatNum(slide.delta, lang)} ${t.stats.km2}`;
 
           return (
-            <CarouselItem key={slide.key} className="pl-2">
+            <CarouselItem key={slide.key} className="ps-2">
               <section className="min-h-[620px] rounded-lg border border-border/70 bg-background/25 p-3 lg:min-h-[560px]">
                 <div className="grid gap-3 lg:grid-cols-[0.82fr_1.18fr]">
                   <div className="flex min-w-0 flex-col gap-3">

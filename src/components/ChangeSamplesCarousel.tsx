@@ -206,7 +206,7 @@ export function ChangeSamplesCarousel() {
           ))}
         </div>
       )}
-      <CarouselContent className="-ml-2">
+      <CarouselContent className="-ms-1">
         {filteredSamples.map((sample, index) => {
           const active = activeIndex === index;
           const Icon = sample.icon;
@@ -214,8 +214,8 @@ export function ChangeSamplesCarousel() {
           const kindLabel = t.changeSamples.kinds[sample.kind];
 
           return (
-            <CarouselItem key={sample.id} className="pl-2">
-              <section className="min-h-[650px] rounded-lg border border-border/70 bg-background/25 p-3 lg:min-h-[610px]">
+            <CarouselItem key={sample.id} className="ps-1">
+              <section className="h-auto min-h-[650px] rounded-lg border border-border/70 bg-background/25 p-2 lg:min-h-[610px]">
                 <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[11px] font-semibold text-muted-foreground">
@@ -246,7 +246,7 @@ export function ChangeSamplesCarousel() {
                   <SampleMetric label={t.filters.axis} value={translateValue(sample.axis, lang)} />
                 </div>
 
-                <div className="grid min-h-0 gap-2 lg:grid-cols-2">
+                <div className="grid min-h-0 gap-1 lg:grid-cols-2">
                   <SampleMap
                     active={active}
                     yearTitle={t.map.year2016}
@@ -343,8 +343,8 @@ function SampleMap({
   const { t } = useI18n();
 
   return (
-    <div className="min-h-[380px] rounded-lg border border-border/70 bg-foreground/[0.03] p-2">
-      <div className="mb-1.5 flex items-center justify-between gap-2">
+    <div className="min-h-[380px] min-w-0 overflow-hidden rounded-lg border border-border/70 bg-foreground/[0.03] p-1">
+      <div className="mb-1 flex items-center justify-between gap-2 px-1 pt-1">
         <div>
           <h3 className="text-base font-black text-foreground">{yearTitle}</h3>
           <p className="text-[10px] text-muted-foreground">{layerLabel}</p>
