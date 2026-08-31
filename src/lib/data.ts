@@ -6,6 +6,9 @@ export type LayerKey =
   | "LandCover"
   | "Study_Area_Sector"
   | "Axis_Road_Sector"
+  | "Road_CairoRing"
+  | "Road_MiddleRing"
+  | "Road_RegionalRing"
   | "Land_Cover2016"
   | "Land_Cover2026"
   | "Land_Cover_Area_Compare"
@@ -13,21 +16,48 @@ export type LayerKey =
   | "Agricultural_Changes"
   | "Industrial_Changes"
   | "Water_Changes"
-  | "Metro_Station"
-  | "Metro_Line"
-  | "lRT_Station"
-  | "LRT_Line";
+  | "Transit_GreenLine"
+  | "Transit_Metro1"
+  | "Transit_Metro2"
+  | "Transit_Metro3"
+  | "Transit_Metro4"
+  | "Transit_Metro6"
+  | "Transit_LRT"
+  | "Transit_MonorailOctober"
+  | "Transit_MonorailCapital"
+  | "Transit_RobikiBelbeis"
+  | "Transit_KafrDawoodSadat";
 
 export type AnyFC = FeatureCollection<Geometry, Record<string, any>>;
 
 const cache = new Map<string, Promise<AnyFC>>();
 const mapCache = new Map<string, Promise<AnyFC>>();
+const TRANSPORT_DATA_VERSION = "study-area-20260824-2";
+const TRANSPORT_KEYS = new Set<LayerKey>([
+  "Road_CairoRing",
+  "Road_MiddleRing",
+  "Road_RegionalRing",
+  "Transit_Metro1",
+  "Transit_Metro3",
+  "Transit_Metro4",
+  "Transit_LRT",
+  "Transit_MonorailCapital",
+  "Transit_RobikiBelbeis",
+]);
+
+function dataUrl(path: string, key: LayerKey) {
+  return TRANSPORT_KEYS.has(key) ? `${path}?v=${TRANSPORT_DATA_VERSION}` : path;
+}
+
+function fetchOptions(key: LayerKey): RequestInit | undefined {
+  return TRANSPORT_KEYS.has(key) ? { cache: "no-store" } : undefined;
+}
 
 export function loadLayer(key: LayerKey): Promise<AnyFC> {
   if (!cache.has(key)) {
     cache.set(
       key,
-      fetch(`/data/${key}.geojson`).then((r) => {
+      fetch(dataUrl(`/data/${key}.geojson`, key), fetchOptions(key)).then((r) => {
         if (!r.ok) throw new Error(`Failed to load ${key}`);
         return r.json();
       }),
@@ -40,7 +70,7 @@ export function loadMapLayer(key: LayerKey): Promise<AnyFC> {
   if (!mapCache.has(key)) {
     mapCache.set(
       key,
-      fetch(`/data/map/${key}.geojson`).then((response) => {
+      fetch(dataUrl(`/data/map/${key}.geojson`, key), fetchOptions(key)).then((response) => {
         if (response.ok) return response.json();
         return loadLayer(key);
       }),
@@ -52,12 +82,24 @@ export function loadMapLayer(key: LayerKey): Promise<AnyFC> {
 export type PricingRow = {
   id: string;
   use: string;
+  land_use_code: number;
   area_m2: number;
   price_2016: number;
   price_2026: number;
 };
 
 export type PricingData = { total_features: number; rows: PricingRow[] };
+
+export type PricingSummaryGroup = {
+  use: string;
+  land_use_code: number | null;
+  count: number;
+  area_m2: number;
+  price_2016: number;
+  price_2026: number;
+};
+
+export type PricingSummaryData = { total_features: number; groups: PricingSummaryGroup[] };
 
 let pricingCache: Promise<PricingData> | null = null;
 export function loadPricingData(): Promise<PricingData> {
@@ -68,6 +110,17 @@ export function loadPricingData(): Promise<PricingData> {
     });
   }
   return pricingCache;
+}
+
+let pricingSummaryCache: Promise<PricingSummaryData> | null = null;
+export function loadPricingSummary(): Promise<PricingSummaryData> {
+  if (!pricingSummaryCache) {
+    pricingSummaryCache = fetch("/data/pricing-summary.json").then((response) => {
+      if (!response.ok) throw new Error("Failed to load pricing summary");
+      return response.json();
+    });
+  }
+  return pricingSummaryCache;
 }
 
 export type SummaryItem = { name: string; area_km2: number; count: number };

@@ -27,8 +27,8 @@
     },
     {
       "name": "خدمات",
-      "area_km2": 59.0946,
-      "count": 720
+      "area_km2": 64.8768,
+      "count": 774
     },
     {
       "name": "طرق",
@@ -44,16 +44,6 @@
       "name": "خضراء / غابات",
       "area_km2": 5.5461,
       "count": 355
-    },
-    {
-      "name": "مقابر",
-      "area_km2": 3.2282,
-      "count": 36
-    },
-    {
-      "name": "تجاري",
-      "area_km2": 2.554,
-      "count": 18
     }
   ],
   "land_cover_2026": [
@@ -84,8 +74,8 @@
     },
     {
       "name": "خدمات",
-      "area_km2": 69.081,
-      "count": 1160
+      "area_km2": 77.4238,
+      "count": 1235
     },
     {
       "name": "طرق",
@@ -101,16 +91,6 @@
       "name": "خضراء / غابات",
       "area_km2": 6.532,
       "count": 391
-    },
-    {
-      "name": "مقابر",
-      "area_km2": 5.7888,
-      "count": 57
-    },
-    {
-      "name": "تجاري",
-      "area_km2": 2.554,
-      "count": 18
     }
   ],
   "urban_by_type": [
@@ -616,7 +596,7 @@
     }
   ],
   "totals": {
-    "study_area_km2": 2583.7617,
+    "study_area_km2": 2583.8,
     "axis_length_km": 135.1981,
     "urban_count": 8049,
     "agri_count": 1365,

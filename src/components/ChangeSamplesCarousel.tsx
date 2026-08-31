@@ -55,7 +55,7 @@ const SAMPLE_CONFIGS: SampleConfig[] = [
     categoryRawName: "حضري / عمراني",
     count: 10,
     icon: Building2,
-    color: "#ef4444",
+    color: "#f97316",
   },
   {
     kind: "agri",
@@ -506,7 +506,7 @@ function sampleFilter(sample: ChangeSample, key: LayerKey, props: FeatureProps) 
   }
   if (key === "Land_Cover2016" || key === "Land_Cover2026") {
     return (
-      canonicalUse(props["وصف_الاستخدام"] ?? props["استخدام_الأرض"]) ===
+      canonicalUse(String(props["وصف_الاستخدام"] ?? props["استخدام_الأرض"] ?? "")) ===
       canonicalUse(sample.categoryRawName)
     );
   }

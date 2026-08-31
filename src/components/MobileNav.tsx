@@ -1,28 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Banknote,
-  Building2,
-  Factory,
-  GitCompare,
-  LayoutDashboard,
-  MapPinned,
-  PanelsTopLeft,
-  Sprout,
-} from "lucide-react";
+import { Banknote, Building2, Factory, Sprout } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export function MobileNav() {
   const { t } = useI18n();
   const { location } = useRouterState();
   const items = [
-    { to: "/", icon: LayoutDashboard, label: t.nav.overview },
+    { to: "/prices", icon: Banknote, label: t.nav.prices },
     { to: "/urban", icon: Building2, label: t.nav.urban },
     { to: "/agricultural", icon: Sprout, label: t.nav.agricultural },
     { to: "/industrial", icon: Factory, label: t.nav.industrial },
-    { to: "/prices", icon: Banknote, label: t.nav.prices },
-    { to: "/comparison", icon: GitCompare, label: t.nav.comparison },
-    { to: "/story", icon: PanelsTopLeft, label: t.nav.story },
-    { to: "/change-samples", icon: MapPinned, label: t.nav.changeSamples },
   ];
 
   return (

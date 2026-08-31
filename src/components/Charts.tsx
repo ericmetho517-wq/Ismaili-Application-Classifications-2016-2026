@@ -29,18 +29,23 @@ import {
 
 
 const tooltipStyle = {
-  background: "var(--color-popover)",
-  border: "1px solid var(--color-border)",
-  borderRadius: 8,
-  color: "var(--color-popover-foreground)",
-  fontSize: 12,
+  background: "var(--popover)",
+  border: "1px solid var(--brand)",
+  borderRadius: 12,
+  color: "var(--popover-foreground)",
+  fontSize: 13,
+  fontWeight: 700,
+  boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+  backdropFilter: "blur(12px)",
+  padding: "8px 12px",
 };
 
-const chartTextColor = "var(--color-foreground)";
-const chartGridColor = "color-mix(in oklch, var(--color-foreground) 18%, transparent)";
-const chartSurfaceStroke = "color-mix(in oklch, var(--color-foreground) 16%, transparent)";
-const chartRestColor = "color-mix(in oklch, var(--color-foreground) 14%, transparent)";
-const chartSelectedStroke = "var(--color-foreground)";
+const chartTextColor = "var(--foreground)";
+const chartMutedTextColor = "var(--muted-foreground)";
+const chartGridColor = "color-mix(in oklch, var(--foreground) 22%, transparent)";
+const chartSurfaceStroke = "color-mix(in oklch, var(--foreground) 18%, transparent)";
+const chartRestColor = "color-mix(in oklch, var(--foreground) 16%, transparent)";
+const chartSelectedStroke = "var(--foreground)";
 
 type ChartSelect<T = SummaryItem> = {
   selectedName?: string | null;
@@ -113,7 +118,7 @@ export function PieUsageChart({
           layout="vertical"
           align="right"
           verticalAlign="middle"
-          wrapperStyle={{ fontSize: 10, color: "var(--color-foreground)", lineHeight: "14px", maxWidth: "45%" }}
+          wrapperStyle={{ fontSize: 10, color: "var(--foreground)", lineHeight: "14px", maxWidth: "45%" }}
           iconType="circle"
           iconSize={8}
         />
@@ -329,7 +334,7 @@ export function CompareYearsChart({
           contentStyle={tooltipStyle}
           formatter={(v: any) => `${formatNum(Number(v), lang)} km²`}
         />
-        <RLegend wrapperStyle={{ fontSize: 11, color: "var(--color-foreground)", paddingTop: 8 }} verticalAlign="bottom" />
+        <RLegend wrapperStyle={{ fontSize: 11, color: "var(--foreground)", paddingTop: 8 }} verticalAlign="bottom" />
         <Bar dataKey="A" name={labelA} fill="#7fc8ec" radius={[4, 4, 0, 0]}>
           {merged.map((d, i) => (
             <Cell key={i} opacity={!selectedName || selectedName === d.name ? 1 : 0.35} cursor={onSelect ? "pointer" : "default"} onClick={() => onSelect?.(d)} />
@@ -1178,14 +1183,14 @@ export function LorenzCurveChart({
           type="number"
           domain={[0, 100]}
           tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
-          tick={{ fill: chartTextColor, fontSize: 10 }}
-          label={{ value: xLabel, fill: chartTextColor, fontSize: 10, position: "insideBottom", offset: -8 }}
+          tick={{ fill: chartTextColor, fontSize: 11, fontWeight: 700 }}
+          label={{ value: xLabel, fill: chartTextColor, fontSize: 11, fontWeight: 800, position: "insideBottom", offset: -8 }}
         />
         <YAxis
           domain={[0, 100]}
           tickFormatter={(v) => `${formatNum(Number(v), lang, 0)}%`}
-          tick={{ fill: chartTextColor, fontSize: 10 }}
-          label={{ value: yLabel, fill: chartTextColor, fontSize: 10, angle: -90, position: "insideLeft" }}
+          tick={{ fill: chartTextColor, fontSize: 11, fontWeight: 700 }}
+          label={{ value: yLabel, fill: chartTextColor, fontSize: 11, fontWeight: 800, angle: -90, position: "insideLeft" }}
         />
         <Tooltip
           contentStyle={tooltipStyle}
@@ -1193,7 +1198,7 @@ export function LorenzCurveChart({
           labelFormatter={(l) => `${xLabel}: ${formatNum(Number(l), lang, 1)}%`}
         />
         <Area type="monotone" dataKey="ref" stroke={chartRestColor} strokeDasharray="4 4" fill="transparent" />
-        <Area type="monotone" dataKey="y" stroke={color} strokeWidth={2} fill="url(#lorenz)" />
+        <Area type="monotone" dataKey="y" stroke={color} strokeWidth={3} fill="url(#lorenz)" />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -1232,12 +1237,16 @@ export function DonutKPI({
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-foreground" dir="ltr">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+        <span className="text-2xl font-black leading-none text-foreground" dir="ltr">
           {formatNum(pct, lang, pct < 10 ? 2 : 1)}
           {suffix}
         </span>
-        {label && <span className="mt-0.5 text-center text-[11px] text-muted-foreground">{label}</span>}
+        {label && (
+          <span className="mt-2 line-clamp-2 max-w-[150px] text-center text-[10px] font-bold leading-4 text-muted-foreground sm:text-[11px]">
+            {label}
+          </span>
+        )}
       </div>
     </div>
   );

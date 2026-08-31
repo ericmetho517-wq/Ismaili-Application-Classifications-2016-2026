@@ -19,6 +19,7 @@ import {
 import { useUseLegend } from "@/components/Legend";
 import { Building2, Sprout, Factory, Droplets, Mountain, Shield } from "lucide-react";
 import { FilterChip, applyMapFilter, landUseFilter, toggleFilter, type MapFilter } from "@/lib/mapFilters";
+import { MAP_COLORS } from "@/lib/colors";
 
 export const Route = createFileRoute("/comparison")({
   head: () => ({
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/comparison")({
 function ComparePage() {
   const { t } = useI18n();
   const { data: s } = useQuery({ queryKey: ["summary"], queryFn: loadSummary });
-  const useLegend = useUseLegend();
+  const useLegend = useUseLegend(["حضري / عمراني", "زراعي", "صناعي", "ارض فضاء", "خدمات"]);
   const [selectedMapFilter, setSelectedMapFilter] = useState<MapFilter | null>(null);
 
   const a = s?.land_cover_2016 ?? [];
@@ -66,21 +67,21 @@ function ComparePage() {
       )}
 
       <div className="grid gap-2 lg:grid-cols-2">
-        <Panel title={`${t.map.title} — ${t.map.year2016}`} className="!p-2">
+        <Panel title={`${t.map.title} — ${t.map.year2016}`} className="dashboard-map-sticky !p-2">
           <FilterChip filter={selectedMapFilter} onClear={() => setSelectedMapFilter(null)} />
-          <MapViewClient height="clamp(360px, 52dvh, 520px)" initialBasemap="satellite" satelliteVintage="2016" syncGroup="comparison-maps" showLegend defaultLayerControlOpen={false} defaultLegendOpen={false} legendItems={useLegend} layers={[
-            { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#22d3ee" },
-            { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: "#f59e0b", weight: 3 },
+          <MapViewClient height="clamp(360px, 52dvh, 520px)" initialBasemap="satellite" syncGroup="comparison-maps" showLegend defaultLayerControlOpen={false} defaultLegendOpen={false} legendItems={useLegend} layers={[
+            { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: MAP_COLORS.studyArea },
+            { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: MAP_COLORS.axisRoad, weight: 4 },
             { key: "Land_Cover2016", label: t.layers.land_2016, type: "polygon", styleBy: "use", fillOpacity: 0.82, weight: 0.25 },
-          ]} initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2016"]} filterFn={applyMapFilter(selectedMapFilter)} />
+          ]} initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2016"]} showTransit filterFn={applyMapFilter(selectedMapFilter)} />
         </Panel>
-        <Panel title={`${t.map.title} — ${t.map.year2026}`} className="!p-2">
+        <Panel title={`${t.map.title} — ${t.map.year2026}`} className="dashboard-map-sticky !p-2">
           <FilterChip filter={selectedMapFilter} onClear={() => setSelectedMapFilter(null)} />
-          <MapViewClient height="clamp(360px, 52dvh, 520px)" initialBasemap="satellite" satelliteVintage="latest" syncGroup="comparison-maps" showLegend defaultLayerControlOpen={false} defaultLegendOpen={false} legendItems={useLegend} layers={[
-            { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#22d3ee" },
-            { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: "#f59e0b", weight: 3 },
+          <MapViewClient height="clamp(360px, 52dvh, 520px)" initialBasemap="satellite" syncGroup="comparison-maps" showLegend defaultLayerControlOpen={false} defaultLegendOpen={false} legendItems={useLegend} layers={[
+            { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: MAP_COLORS.studyArea },
+            { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: MAP_COLORS.axisRoad, weight: 4 },
             { key: "Land_Cover2026", label: t.layers.land_2026, type: "polygon", styleBy: "use", fillOpacity: 0.82, weight: 0.25 },
-          ]} initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026"]} filterFn={applyMapFilter(selectedMapFilter)} />
+          ]} initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026"]} showTransit filterFn={applyMapFilter(selectedMapFilter)} />
         </Panel>
       </div>
 
@@ -102,10 +103,10 @@ function ComparePage() {
 
       <div className="mt-2 grid gap-2 lg:grid-cols-2">
         <Panel title={`${t.charts.radar} — ${t.map.year2016}`} className="min-h-[270px]">
-          {s && <RadarProfileChart data={s.land_cover_2016} color="#22d3ee" height={250} />}
+          {s && <RadarProfileChart data={s.land_cover_2016} color={MAP_COLORS.studyArea} height={250} />}
         </Panel>
         <Panel title={`${t.charts.radar} — ${t.map.year2026}`} className="min-h-[270px]">
-          {s && <RadarProfileChart data={s.land_cover_2026} color="#f59e0b" height={250} />}
+          {s && <RadarProfileChart data={s.land_cover_2026} color={MAP_COLORS.axisRoad} height={250} />}
         </Panel>
       </div>
 

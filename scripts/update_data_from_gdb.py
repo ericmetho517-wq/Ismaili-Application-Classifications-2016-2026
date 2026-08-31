@@ -49,13 +49,13 @@ USE_CODE_MAP = {
     "4": "\u0645\u0646\u0637\u0642\u0629 \u0639\u0633\u0643\u0631\u064a\u0629",
     "5": "\u062e\u062f\u0645\u0627\u062a",
     "6": "\u062e\u062f\u0645\u0627\u062a",
-    "7": "\u0645\u0642\u0627\u0628\u0631",
+    "7": "\u062e\u062f\u0645\u0627\u062a",
     "8": "\u0645\u064a\u0627\u0647",
     "10": "\u0637\u0631\u0642",
     "11": "\u062e\u062f\u0645\u0627\u062a",
     "12": "\u062e\u062f\u0645\u0627\u062a",
     "13": "\u062e\u062f\u0645\u0627\u062a",
-    "14": "\u062a\u062c\u0627\u0631\u064a",
+    "14": "\u062e\u062f\u0645\u0627\u062a",
     "15": "\u062e\u0636\u0631\u0627\u0621 / \u063a\u0627\u0628\u0627\u062a",
     "111": "\u062e\u062f\u0645\u0627\u062a",
 }
@@ -189,6 +189,7 @@ def export_pricing_data(land, out_dir):
             {
                 "id": clean_value(row.get("GlobalID")) if row.get("GlobalID") else str(index + 1),
                 "use": clean_value(row.get(COL["desc"])),
+                "land_use_code": int(row.get(COL["use"])),
                 "area_m2": area,
                 "price_2016": old_price,
                 "price_2026": new_price,
@@ -286,7 +287,7 @@ def build_summary(layers):
         "water_by_name": summary_items(water, lambda row: row.get(COL["water_name"])),
         "change_status_2026": summary_items(land2026, lambda row: row.get(COL["change"])),
         "totals": {
-            "study_area_km2": round4(area_sum(study).sum()),
+            "study_area_km2": round(float(area_sum(study).sum()), 1),
             "axis_length_km": round4(axis_length),
             "urban_count": int(len(urban)),
             "agri_count": int(len(agri)),

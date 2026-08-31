@@ -1,43 +1,30 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
-import logoUrl from "@/assets/company-logo.avif";
-import {
-  LayoutDashboard,
-  Building2,
-  Sprout,
-  Factory,
-  GitCompare,
-  MapPinned,
-  PanelsTopLeft,
-  Banknote,
-} from "lucide-react";
-import { motion } from "framer-motion";
+import logoUrl from "@/assets/transport-ministry-logo.jpg";
+import companyLogoUrl from "@/assets/company-logo.avif";
+import { Banknote, Building2, Factory, Sprout } from "lucide-react";
 
 export function Sidebar() {
   const { t, dir } = useI18n();
   const { location } = useRouterState();
   const items = [
-    { to: "/", icon: LayoutDashboard, label: t.nav.overview },
+    { to: "/prices", icon: Banknote, label: t.nav.prices },
     { to: "/urban", icon: Building2, label: t.nav.urban },
     { to: "/agricultural", icon: Sprout, label: t.nav.agricultural },
     { to: "/industrial", icon: Factory, label: t.nav.industrial },
-    { to: "/prices", icon: Banknote, label: t.nav.prices },
-    { to: "/comparison", icon: GitCompare, label: t.nav.comparison },
-    { to: "/story", icon: PanelsTopLeft, label: t.nav.story },
-    { to: "/change-samples", icon: MapPinned, label: t.nav.changeSamples },
   ];
   return (
-    <aside className="glass surface-hover hidden h-full min-h-0 w-14 shrink-0 flex-col items-center rounded-xl p-2 md:flex">
+    <aside className="glass hidden h-full min-h-0 w-14 shrink-0 flex-col items-center rounded-xl p-2 md:flex">
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-lg border border-border"
+        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-amber-300/70 bg-white shadow-[0_0_14px_rgba(245,190,70,0.24)]"
         title={t.appName}
       >
         <img
           src={logoUrl}
-          alt="Ismailia Geo Dashboard Logo"
-          width={28}
-          height={28}
-          className="h-7 w-7"
+          alt={dir === "rtl" ? "شعار وزارة النقل المصرية" : "Egyptian Ministry of Transport logo"}
+          width={55}
+          height={36}
+          className="h-9 w-auto max-w-none shrink-0"
         />
       </div>
       <nav className="mt-3 flex min-h-0 w-full flex-1 flex-col items-center gap-1.5 overflow-y-auto overflow-x-hidden">
@@ -57,10 +44,8 @@ export function Sidebar() {
               }`}
             >
               {active && (
-                <motion.span
-                  layoutId="sidebar-active"
+                <span
                   className="absolute inset-0 rounded-lg border border-[var(--brand)]/45 bg-[var(--surface-active)] shadow-[0_0_18px_color-mix(in_oklch,var(--brand)_24%,transparent)]"
-                  transition={{ type: "spring", stiffness: 280, damping: 28 }}
                 />
               )}
               <it.icon className="relative h-[18px] w-[18px]" />
@@ -76,8 +61,17 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="mt-1 shrink-0 text-[9px] text-muted-foreground" title="Ismailia GeoDash">
-        ©{new Date().getFullYear()}
+      <div
+        className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/70 bg-white/95 p-1 shadow-sm"
+        title="Ismailia GeoDash"
+      >
+        <img
+          src={companyLogoUrl}
+          alt="Ismailia GeoDash"
+          width={28}
+          height={28}
+          className="h-7 w-7 object-contain"
+        />
       </div>
     </aside>
   );

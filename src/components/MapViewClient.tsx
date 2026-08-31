@@ -22,7 +22,8 @@ export function MapViewClient(props: MapViewProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = window.setTimeout(() => setMounted(true), 40);
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (!mounted) return <MapFallback height={props.height} />;

@@ -1,24 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { AnyFC, LayerKey } from "@/lib/data";
 import { loadMapLayer } from "@/lib/data";
-import { colorFor, labelFor, changeColor, changeLabel } from "@/lib/colors";
+import { MAP_COLORS, colorFor, labelFor, changeColor, changeLabel } from "@/lib/colors";
 import { useI18n } from "@/lib/i18n";
-import { useTheme } from "@/lib/theme";
 import { translateFieldLabel, translateValue } from "@/lib/labels";
 import { motion, AnimatePresence } from "framer-motion";
-import { Layers, Maximize2, Map as MapIcon } from "lucide-react";
+import {
+  Layers,
+  Maximize2,
+  Map as MapIcon,
+} from "lucide-react";
 
 type LayerSpec = {
   key: LayerKey;
   label: string;
   type: "polygon" | "line" | "boundary" | "point";
-  styleBy?: "use" | "change" | "fixed" | "price2016" | "price2026" | "priceGrowth";
+  styleBy?: "use" | "agriculture" | "change" | "fixed" | "price2016" | "price2026" | "priceGrowth";
   fixedColor?: string;
+  fillColor?: string;
   weight?: number;
+  dashArray?: string;
+  dashOffset?: string;
+  lineCap?: "butt" | "round" | "square";
   radius?: number;
   pointShape?: "circle" | "firefly" | "metro";
   opacity?: number;
   fillOpacity?: number;
+  smoothFactor?: number;
   outlineOnly?: boolean;
   interactive?: boolean;
 };
@@ -28,19 +36,19 @@ type Basemap = "blue" | "streets" | "satellite" | "dark";
 const BASEMAPS: Record<Basemap, { url: string; attribution: string; className?: string }> = {
   blue: {
     url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    attribution: "© OpenStreetMap © CARTO",
+    attribution: "© OpenStreetMap contributors © CARTO",
     className: "corporate-blue-basemap",
   },
   dark: {
     url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    attribution: "© OpenStreetMap © CARTO",
+    attribution: "© OpenStreetMap contributors © CARTO",
   },
   satellite: {
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attribution: "Tiles © Esri",
+    attribution: "Esri World Imagery © Esri",
   },
   streets: {
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution: "© OpenStreetMap contributors",
   },
 };
@@ -74,25 +82,54 @@ export type MapViewProps = {
 
 const syncedMapGroups: Record<string, Set<any>> = {};
 const orderedLayerCache = new WeakMap<AnyFC, AnyFC>();
-const LARGE_LAYER_BATCH_SIZE = 750;
-const TRANSIT_LAYER_KEYS: LayerKey[] = ["LRT_Line", "lRT_Station", "Metro_Line", "Metro_Station"];
-const STATION_NAME_FIELD = "\u0627\u0633\u0645_\u0627\u0644\u0645\u062d\u0637\u0629";
+const LARGE_LAYER_BATCH_SIZE = 2000;
+const ROAD_LINES: Array<LayerSpec & { labelAr: string; labelEn: string }> = [
+  { key: "Road_CairoRing", label: "", labelAr: "الطريق الدائري", labelEn: "Cairo Ring Road", type: "line", fixedColor: "#20cfc4", weight: 3, lineCap: "round" },
+  { key: "Road_MiddleRing", label: "", labelAr: "الطريق الدائري الأوسطي", labelEn: "Middle Ring Road", type: "line", fixedColor: "#123b7a", weight: 3, lineCap: "round" },
+  { key: "Road_RegionalRing", label: "", labelAr: "الطريق الدائري الإقليمي", labelEn: "Regional Ring Road", type: "line", fixedColor: "#e218b8", weight: 3, lineCap: "round" },
+];
+const TRANSIT_LINES: Array<LayerSpec & { labelAr: string; labelEn: string }> = [
+  { key: "Transit_Metro3", label: "", labelAr: "خط المترو الثالث", labelEn: "Metro Line 3", type: "line", fixedColor: "#2f80ed", weight: 2.5, dashArray: "", lineCap: "round" },
+  { key: "Transit_Metro4", label: "", labelAr: "خط المترو الرابع", labelEn: "Metro Line 4", type: "line", fixedColor: "#f2b632", weight: 2.5, dashArray: "", lineCap: "round" },
+  { key: "Transit_LRT", label: "", labelAr: "خط القطار الكهربائي (LRT)", labelEn: "LRT Rail Line", type: "line", fixedColor: "#54d83a", weight: 2.5, dashArray: "", lineCap: "round" },
+  { key: "Transit_MonorailCapital", label: "", labelAr: "مونوريل العاصمة", labelEn: "Capital Monorail", type: "line", fixedColor: "#d8d8d8", weight: 2.5, dashArray: "", lineCap: "round" },
+  { key: "Transit_RobikiBelbeis", label: "", labelAr: "سكة حديد الروبيكي - بلبيس", labelEn: "Robiki–Belbeis Railway", type: "line", fixedColor: "#171717", weight: 2.8, dashArray: "", lineCap: "round" },
+];
 
-function isTransitLayer(key: LayerKey) {
-  return TRANSIT_LAYER_KEYS.includes(key);
-}
-
-function stationColor(index: number, key: LayerKey) {
-  const sequenceIndex = index * 2 + (key === "Metro_Station" ? 1 : 0);
-  const hue = (sequenceIndex * 137.50776405) % 360;
-  return `hsl(${hue.toFixed(2)} 78% 46%)`;
-}
-
-const MULTICOLOR_STATIONS =
-  "conic-gradient(#ef4444, #f59e0b, #22c55e, #0ea5e9, #8b5cf6, #ec4899, #ef4444)";
+const ROAD_LAYER_KEYS: LayerKey[] = ROAD_LINES.map((line) => line.key);
+const TRANSIT_LAYER_KEYS: LayerKey[] = TRANSIT_LINES.map((line) => line.key);
+const TRANSPORT_LAYER_KEYS: LayerKey[] = [...ROAD_LAYER_KEYS, ...TRANSIT_LAYER_KEYS];
 
 const PRICE_2016_FIELD = "سعر_الأرض_2016";
 const PRICE_2026_FIELD = "سعر_الأرض_2026";
+
+// Violet remains legible over the greens, sand, water, and built-up areas in satellite imagery.
+const PRICE_BAND_COLORS = ["#f0abfc", "#d946ef", "#9333ea", "#4c1d95"] as const;
+const PRICE_GROWTH_COLORS = PRICE_BAND_COLORS;
+
+const AGRICULTURAL_STYLE = {
+  land: { fill: "#84cc16", stroke: "#d9f99d" },
+  animal: { fill: "#f59e0b", stroke: "#fef3c7" },
+  greenhouse: { fill: "#06b6d4", stroke: "#cffafe" },
+} as const;
+
+function agriculturalStyle(props: Record<string, any>) {
+  const use = String(props["وصف_الاستخدام"] ?? "").trim();
+  if (/حيوان|دواجن|ماشية/.test(use)) return AGRICULTURAL_STYLE.animal;
+  if (/صوب|محمية/.test(use)) return AGRICULTURAL_STYLE.greenhouse;
+  return AGRICULTURAL_STYLE.land;
+}
+
+export function agriculturalLegendItems(lang: "ar" | "en") {
+  const labels = lang === "ar"
+    ? ["أرض زراعية", "مزارع حيوانية", "صوب زراعية"]
+    : ["Agricultural land", "Animal farms", "Greenhouses"];
+  return [
+    { color: AGRICULTURAL_STYLE.land.fill, label: labels[0] },
+    { color: AGRICULTURAL_STYLE.animal.fill, label: labels[1] },
+    { color: AGRICULTURAL_STYLE.greenhouse.fill, label: labels[2] },
+  ];
+}
 
 function unitLandPrice(props: Record<string, any>, year: 2016 | 2026) {
   const total = Number(props[year === 2016 ? PRICE_2016_FIELD : PRICE_2026_FIELD] ?? 0);
@@ -100,25 +137,60 @@ function unitLandPrice(props: Record<string, any>, year: 2016 | 2026) {
   return total > 0 && area > 0 ? total / area : 0;
 }
 
+function classificationColor(props: Record<string, any>) {
+  const code = String(props["استخدام_الأرض"] ?? "").trim();
+  if (code === "3") return MAP_COLORS.urban;
+  if (code === "0") return MAP_COLORS.agricultural;
+  if (code === "1") return MAP_COLORS.industrial;
+  if (code === "2") return MAP_COLORS.vacant;
+  if (code) return MAP_COLORS.services;
+  return colorFor(props["وصف_الاستخدام"]);
+}
+
 function priceColor(props: Record<string, any>, mode: "price2016" | "price2026" | "priceGrowth") {
-  const oldPrice = unitLandPrice(props, 2016);
-  const newPrice = unitLandPrice(props, 2026);
-  const value = mode === "priceGrowth" ? (oldPrice > 0 ? ((newPrice - oldPrice) / oldPrice) * 100 : 0) : mode === "price2016" ? oldPrice : newPrice;
-  const breaks = mode === "priceGrowth" ? [100, 300, 700, 1200, 1800] : [500, 2000, 5000, 10000, 20000];
-  const colors = ["#dceffc", "#a9d7f2", "#6bbce7", "#2f98d0", "#176cae", "#0b315f"];
-  const index = breaks.findIndex((limit) => value < limit);
-  return colors[index < 0 ? colors.length - 1 : index];
+  if (mode === "priceGrowth") {
+    const p16 = unitLandPrice(props, 2016);
+    const p26 = unitLandPrice(props, 2026);
+    if (!p16 || !p26) return "#475569";
+    const growth = ((p26 - p16) / p16) * 100;
+    if (growth >= 120) return PRICE_GROWTH_COLORS[3];
+    if (growth >= 80) return PRICE_GROWTH_COLORS[2];
+    if (growth >= 40) return PRICE_GROWTH_COLORS[1];
+    return PRICE_GROWTH_COLORS[0];
+  }
+  const price = unitLandPrice(props, mode === "price2016" ? 2016 : 2026);
+  if (!price) return "#475569";
+  if (price >= 2000) return PRICE_BAND_COLORS[3];
+  if (price >= 1000) return PRICE_BAND_COLORS[2];
+  if (price >= 500) return PRICE_BAND_COLORS[1];
+  return PRICE_BAND_COLORS[0];
+}
+
+export function priceLegendItems(mode: "price2016" | "price2026" | "priceGrowth", lang: "ar" | "en") {
+  if (mode === "priceGrowth") {
+    const labels =
+      lang === "ar"
+        ? ["أقل من 40%", "40% - 80%", "80% - 120%", "120% فأكثر"]
+        : ["Below 40%", "40% - 80%", "80% - 120%", "120%+"];
+    return PRICE_GROWTH_COLORS.map((color, index) => ({ color, label: labels[index] }));
+  }
+
+  const labels =
+    lang === "ar"
+      ? ["أقل من 500 جنيه/م²", "500 - 1,000 جنيه/م²", "1,000 - 2,000 جنيه/م²", "2,000 جنيه/م² فأكثر"]
+      : ["Below 500 EGP/m²", "500 - 1,000 EGP/m²", "1,000 - 2,000 EGP/m²", "2,000+ EGP/m²"];
+  return PRICE_BAND_COLORS.map((color, index) => ({ color, label: labels[index] }));
 }
 
 function registerSyncedMap(group: string, map: any) {
-  syncedMapGroups[group] ??= new Set();
+  if (!syncedMapGroups[group]) syncedMapGroups[group] = new Set();
   const peers = syncedMapGroups[group];
-  const firstPeer = peers.values().next().value;
   peers.add(map);
 
-  if (firstPeer) {
+  const activePeer = Array.from(peers).find((peer) => peer !== map);
+  if (activePeer) {
     map._dashboardSyncing = true;
-    map.setView(firstPeer.getCenter(), firstPeer.getZoom(), { animate: false });
+    map.setView(activePeer.getCenter(), activePeer.getZoom(), { animate: false });
     window.setTimeout(() => {
       map._dashboardSyncing = false;
     }, 0);
@@ -145,13 +217,6 @@ function registerSyncedMap(group: string, map: any) {
     peers.delete(map);
     if (peers.size === 0) delete syncedMapGroups[group];
   };
-}
-
-function getFeatureAreaKm2(feature: any) {
-  const p = feature?.properties || {};
-  return Number(
-    p["مساحة_كم2"] ?? p["المساحة_كم2"] ?? p["مساحة_التغير_كم2"] ?? p["مساحة_المنطقة_كم2"] ?? 0,
-  );
 }
 
 function escapeHtml(value: unknown) {
@@ -202,55 +267,56 @@ function formatFieldName(key: string, lang: "ar" | "en") {
     Shape_Length: { ar: "طول الشكل", en: "Shape length" },
     SHAPE_Area: { ar: "مساحة الشكل", en: "Shape area" },
     Shape_Area: { ar: "مساحة الشكل", en: "Shape area" },
+    GlobalID: { ar: "المعرف العالمي", en: "Global ID" },
   };
-  const match = known[key];
-  if (match) return lang === "ar" ? match.ar : match.en;
-  return translateFieldLabel(repairText(key), lang);
+  if (known[key]) return known[key][lang];
+
+  const translated = translateFieldLabel(key, lang);
+  if (translated !== key) return translated;
+
+  const normalized = key.replace(/^Shape_/i, "مساحة_").replace(/_/g, " ");
+  return lang === "ar" ? normalized : key;
 }
 
-function isDisplayableValue(value: unknown) {
-  if (value === null || value === undefined || value === "") return false;
-  if (typeof value === "number") return Number.isFinite(value);
-  const text = String(value).trim().toLowerCase();
-  return text !== "" && text !== "null" && text !== "undefined" && text !== "nan";
+function isDisplayableValue(val: unknown): boolean {
+  if (val === null || val === undefined || val === "") return false;
+  const s = String(val).trim();
+  if (!s || s === "0" || s === "Null" || s === "0.0") return false;
+  return true;
 }
-
-function rowKey(label: unknown) {
-  return String(label).replace(/\s+/g, " ").trim().toLowerCase();
-}
-
-const HIDDEN_POPUP_FIELDS = new Set([
-  "استخدام_الأرض",
-  "اسم_المحور",
-  "اسم_القطاع",
-  "globalid",
-  "المحافظة",
-]);
 
 function isHiddenPopupField(key: string) {
-  return HIDDEN_POPUP_FIELDS.has(repairText(key).trim().toLowerCase());
+  const hiddenKeys = new Set(["OBJECTID", "GlobalID"]);
+  return hiddenKeys.has(key) || key.startsWith("FID_");
 }
 
 function popupLabel(key: string, lang: "ar" | "en", t: any) {
-  const labels: Record<string, { ar: string; en: string }> = {
-    وصف_الاستخدام: { ar: t.common.name, en: t.common.name },
-    استخدام_الأرض: { ar: t.common.type, en: t.common.type },
-    مساحة_كم2: { ar: t.common.area, en: t.common.area },
-    المساحة_كم2: { ar: t.common.area, en: t.common.area },
-    مساحة_التغير_كم2: { ar: "مساحة التغير", en: "Change area" },
-    مساحة_المنطقة_كم2: { ar: t.common.area, en: t.common.area },
-    المساحة_فدان: { ar: "المساحة بالفدان", en: "Area in feddans" },
-    حالة_التغير: { ar: t.filters.changeStatus, en: t.filters.changeStatus },
-    نمط_العمران: { ar: "نمط العمران", en: "Urban pattern" },
-    نوع_ملكية_الأرض: { ar: "ملكية الأرض", en: "Land ownership" },
-    أنواع_المحاصيل_المزروعة: { ar: "المحاصيل", en: "Crops" },
-    اسم_المسطح: { ar: t.common.name, en: t.common.name },
-    مساحة_التغير_بالمتر: { ar: "مساحة التغير بالمتر", en: "Change area (m²)" },
-    SHAPE_Length: { ar: "الطول", en: "Length" },
-    Shape_Length: { ar: "الطول", en: "Length" },
-  };
-  const label = labels[key];
-  return label ? label[lang] : formatFieldName(key, lang);
+  if (key === "وصف_الاستخدام") return t.filters.landUse;
+  if (key === "استخدام_الأرض") return t.filters.landUse;
+  if (key === "حالة_التغير") return t.filters.changeStatus;
+  if (
+    key === "مساحة_كم2" ||
+    key === "المساحة_كم2" ||
+    key === "مساحة_التغير_كم2" ||
+    key === "مساحة_المنطقة_كم2"
+  ) {
+    return t.common.area;
+  }
+  if (key === "المساحة_فدان") return lang === "ar" ? "المساحة بالفدان" : "Area in feddan";
+  if (key === "مساحة_التغير_بالمتر") return lang === "ar" ? "مساحة التغير (م²)" : "Change area (m²)";
+  if (key === "SHAPE_Length" || key === "Shape_Length") return lang === "ar" ? "المحيط/الطول" : "Perimeter/Length";
+  if (key === "SHAPE_Area" || key === "Shape_Area") return lang === "ar" ? "المساحة" : "Area";
+  if (key === "سعر_الأرض_2016") return lang === "ar" ? "إجمالي سعر الأرض 2016" : "2016 Total Land Price";
+  if (key === "سعر_الأرض_2026") return lang === "ar" ? "إجمالي سعر الأرض 2026" : "2026 Total Land Price";
+  return formatFieldName(key, lang);
+}
+
+function rowKey(key: string) {
+  return key
+    .replace(/^Shape_/i, "")
+    .replace(/^SHAPE_/i, "")
+    .replace(/_/g, "")
+    .toLowerCase();
 }
 
 function popupValue(key: string, value: unknown, lang: "ar" | "en", t: any) {
@@ -295,45 +361,6 @@ function geometryLabel(type: unknown, lang: "ar" | "en") {
   return labels[key]?.[lang] ?? key;
 }
 
-function popupFieldKeys(spec: LayerSpec) {
-  if (spec.key === "Metro_Station" || spec.key === "lRT_Station") {
-    return [STATION_NAME_FIELD];
-  }
-  if (spec.key === "Metro_Line" || spec.key === "LRT_Line") {
-    return ["Shape_Length", "SHAPE_Length"];
-  }
-  if (spec.key === "Study_Area_Sector") {
-    return ["مساحة_المنطقة_كم2", "Shape_Length", "SHAPE_Length"];
-  }
-  if (spec.key === "Land_Cover2016" || spec.key === "Land_Cover2026") {
-    return [
-      "وصف_الاستخدام",
-      "استخدام_الأرض",
-      "مساحة_كم2",
-      "المساحة_فدان",
-      "سعر_الأرض_2016",
-      "سعر_الأرض_2026",
-      "حالة_التغير",
-    ];
-  }
-  if (spec.key === "Urban_Changes" || spec.key === "Industrial_Changes") {
-    return ["وصف_الاستخدام", "نمط_العمران", "مساحة_التغير_كم2", "مساحة_التغير_بالمتر"];
-  }
-  if (spec.key === "Agricultural_Changes") {
-    return [
-      "وصف_الاستخدام",
-      "نوع_ملكية_الأرض",
-      "أنواع_المحاصيل_المزروعة",
-      "المساحة_كم2",
-      "المساحة_فدان",
-    ];
-  }
-  if (spec.key === "Water_Changes") {
-    return ["اسم_المسطح", "مساحة_كم2", "Shape_Length", "SHAPE_Length"];
-  }
-  return ["وصف_الاستخدام", "مساحة_كم2", "المساحة_كم2"];
-}
-
 function buildPopupHtml({
   feature,
   spec,
@@ -350,30 +377,24 @@ function buildPopupHtml({
   const p = feature?.properties || {};
   const rawName = p["وصف_الاستخدام"];
   const waterName = p["اسم_المسطح"];
-  const stationName = p[STATION_NAME_FIELD];
-  const contextualName = stationName ?? waterName ?? rawName ?? p["اسم_المحور"] ?? p["اسم_القطاع"];
+  const transitName = p["اسم_الخط"] ?? p["اسم_الجزء"];
+  const contextualName = transitName ?? waterName ?? rawName ?? p["اسم_المحور"] ?? p["اسم_القطاع"];
   const use = rawName ?? p["استخدام_الأرض"];
   const title =
     isDisplayableValue(contextualName)
       ? translateValue(repairText(contextualName), lang)
-        : use
-          ? labelFor(use, lang)
-          : spec.label;
-  const color =
-    colorOverride ?? spec.fixedColor ?? (spec.styleBy === "change" ? changeColor(p["حالة_التغير"]) : colorFor(use));
-  const priorityKeys = popupFieldKeys(spec);
-  const detailKeys = [
-    ...priorityKeys,
-    ...Object.keys(p).filter((key) => !priorityKeys.includes(key)),
-  ].filter((key) => !isHiddenPopupField(key));
-  const rows: Array<[string, unknown]> = detailKeys
-    .map((key) => [key, p[key]] as [string, unknown])
+      : use
+        ? labelFor(use, lang)
+        : spec.label;
+  const color = colorOverride ?? spec.fixedColor ?? "#64748b";
+
+  const rows: Array<[string, unknown]> = Object.keys(p)
+    .filter((k) => !isHiddenPopupField(k) && isDisplayableValue(p[k]))
+    .map((k) => [k, p[k]] as [string, unknown])
     .filter(([key, value], index, arr) => {
-      if (!isDisplayableValue(value)) return false;
       return (
         arr.findIndex(
-          ([candidate, candidateValue]) =>
-            isDisplayableValue(candidateValue) && rowKey(candidate) === rowKey(key),
+          ([candidate]) => rowKey(candidate) === rowKey(key),
         ) === index
       );
     })
@@ -422,80 +443,129 @@ function buildPopupHtml({
       </header>
       <div class="gis-popup-meta">
         <span>${escapeHtml(lang === "ar" ? "نوع العنصر" : "Geometry")} <strong>${escapeHtml(geometryLabel(feature?.geometry?.type, lang))}</strong></span>
-        <span>${escapeHtml(lang === "ar" ? "البيانات المتاحة" : "Available fields")} <strong>${rows.length}</strong></span>
       </div>
-      <p class="gis-popup-section-title">${escapeHtml(lang === "ar" ? "تفاصيل العنصر" : "Feature details")}</p>
+      <p class="gis-popup-section-title">${escapeHtml(lang === "ar" ? "تفاصيل المعلم" : "Feature details")}</p>
       <div class="gis-popup-grid">${tableRows}</div>
     </article>
   `;
 }
 
 function highlightFeatureLayer(lyr: any, spec: LayerSpec) {
+  const highlightColor = lyr.options?.fillColor ?? lyr.options?.color ?? spec.fixedColor ?? "#3b82f6";
   if (spec.type === "point") {
     lyr.setRadius?.((spec.radius ?? 7) + 2);
-    lyr.setStyle?.({ color: "#ffffff", weight: 3, fillOpacity: 1, opacity: 1 });
+    lyr.setStyle?.({ color: highlightColor, weight: 3, fillOpacity: 1, opacity: 1 });
   } else if (spec.type === "line") {
     lyr.setStyle?.({
       weight: Math.max((spec.weight ?? 3) + 3, 6),
       opacity: 1,
     });
+  } else if (spec.type === "boundary") {
+    lyr.setStyle?.({
+      color: spec.fixedColor ?? highlightColor,
+      weight: 3,
+      opacity: 1,
+      fill: true,
+      fillColor: spec.fillColor ?? "#ffe7a3",
+      fillOpacity: Math.min((spec.fillOpacity ?? 0.16) + 0.06, 0.24),
+    });
   } else {
     lyr.setStyle?.({
-      color: "#ffffff",
-      weight: 2.4,
+      color: highlightColor,
+      weight: 2.8,
       opacity: 1,
-      fillOpacity: Math.min((spec.fillOpacity ?? 0.62) + 0.16, 0.9),
+      fillOpacity: Math.min((spec.fillOpacity ?? 0.7) + 0.15, 0.95),
     });
   }
   lyr.bringToFront?.();
 }
 
-function orderLandCoverForDisplay(fc: AnyFC, key: LayerKey): AnyFC {
-  if (key !== "Land_Cover2016" && key !== "Land_Cover2026") return fc;
-  const cached = orderedLayerCache.get(fc);
-  if (cached) return cached;
-  const ordered = {
-    ...fc,
-    features: [...fc.features].sort((a, b) => getFeatureAreaKm2(b) - getFeatureAreaKm2(a)),
-  };
-  orderedLayerCache.set(fc, ordered);
-  return ordered;
-}
-
-function yieldToBrowser() {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+function resetFeatureLayerStyle(lyr: any, spec: LayerSpec, colorOverride?: string) {
+  if (spec.type === "point") {
+    lyr.setRadius?.(spec.radius ?? 7);
+    lyr.setStyle?.({
+      color: "#ffffff",
+      weight: 1.5,
+      fillColor: colorOverride ?? spec.fixedColor ?? "#22c55e",
+      fillOpacity: spec.fillOpacity ?? 0.9,
+      opacity: spec.opacity ?? 1,
+    });
+  } else if (spec.type === "line") {
+    lyr.setStyle?.({
+      color: colorOverride ?? spec.fixedColor ?? "#22d3ee",
+      weight: spec.weight ?? 3,
+      opacity: spec.opacity ?? 0.9,
+      dashArray: spec.dashArray,
+    });
+  } else if (spec.type === "boundary") {
+    lyr.setStyle?.({
+      color: spec.fixedColor ?? "#22d3ee",
+      weight: spec.weight ?? 2.2,
+      opacity: spec.opacity ?? 0.9,
+      fill: true,
+      fillColor: spec.fillColor ?? "#ffe7a3",
+      fillOpacity: spec.fillOpacity ?? 0.16,
+      dashArray: spec.dashArray ?? "8 6",
+    });
+  } else {
+    const p = lyr.feature?.properties || {};
+    let fill = colorOverride ?? spec.fixedColor ?? "#64748b";
+    let stroke = fill;
+    if (!colorOverride) {
+      if (spec.styleBy === "use") fill = classificationColor(p);
+      else if (spec.styleBy === "agriculture") {
+        const agricultural = agriculturalStyle(p);
+        fill = agricultural.fill;
+        stroke = agricultural.stroke;
+      }
+      else if (spec.styleBy === "change") fill = changeColor(p["حالة_التغير"]);
+      else if (spec.styleBy === "price2016" || spec.styleBy === "price2026" || spec.styleBy === "priceGrowth") {
+        fill = priceColor(p, spec.styleBy);
+      }
+    }
+    if (spec.styleBy !== "agriculture") stroke = fill;
+    if (spec.outlineOnly) {
+      lyr.setStyle?.({
+        color: spec.fixedColor ?? "#ffffff",
+        weight: spec.weight ?? 3,
+        fillColor: fill,
+        fillOpacity: 0,
+        fillRule: "nonzero",
+        opacity: spec.opacity ?? 1,
+      });
+    } else {
+      lyr.setStyle?.({
+        color: stroke,
+        weight: spec.weight ?? 0.5,
+        fillColor: fill,
+        fillOpacity: spec.fillOpacity ?? 0.76,
+        fillRule: "nonzero",
+        opacity: 0.95,
+      });
+    }
+  }
 }
 
 export function MapView(props: MapViewProps) {
-  const { lang, t, dir } = useI18n();
-  const { theme } = useTheme();
-  const layers = useMemo<LayerSpec[]>(() => {
-    if (props.showTransit === false) return props.layers;
-    const transit: LayerSpec[] = [
-      { key: "LRT_Line", label: lang === "ar" ? "خط LRT" : "LRT Line", type: "line", fixedColor: "#d946ef", weight: 4, opacity: 1 },
-      { key: "lRT_Station", label: lang === "ar" ? "محطات LRT" : "LRT Stations", type: "point", fixedColor: "#d946ef", radius: 5.5, pointShape: "firefly" },
-      { key: "Metro_Line", label: lang === "ar" ? "خط المترو" : "Metro Line", type: "line", fixedColor: "#0284c7", weight: 4, opacity: 1 },
-      { key: "Metro_Station", label: lang === "ar" ? "محطات المترو" : "Metro Stations", type: "point", fixedColor: "#0284c7", radius: 6.5, pointShape: "metro" },
-    ];
-    const existing = new Set(props.layers.map((layer) => layer.key));
-    return [...props.layers, ...transit.filter((layer) => !existing.has(layer.key))];
-  }, [lang, props.layers, props.showTransit]);
-  const themeBasemap: Basemap = theme === "light" ? "blue" : "dark";
-  const mapEl = useRef<HTMLDivElement | null>(null);
+  const { t, lang } = useI18n();
+  const defaultBasemap: Basemap = "satellite";
+  const dir = lang === "ar" ? "rtl" : "ltr";
+
+  const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const layerRefs = useRef<Record<string, any>>({});
   const hitTargetsRef = useRef<Record<string, Array<{ layer: any; spec: LayerSpec }>>>({});
   const tileRef = useRef<any>(null);
   const syncCleanupRef = useRef<null | (() => void)>(null);
+  const transitFitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasFittedTransitRef = useRef(false);
   const previousStyleKey = useRef(props.styleChangeKey);
   const [LRef, setLRef] = useState<any>(null);
+
   const [active, setActive] = useState<Set<string>>(
-    new Set([
-      ...(props.initialActive ?? props.layers.map((l) => l.key)),
-      ...(props.showTransit === false ? [] : TRANSIT_LAYER_KEYS),
-    ]),
+    new Set(props.initialActive ?? props.layers.map((l) => l.key)),
   );
-  const [basemap, setBasemap] = useState<Basemap>(props.initialBasemap ?? themeBasemap);
+  const [basemap, setBasemap] = useState<Basemap>(props.initialBasemap ?? defaultBasemap);
   const [openCtrl, setOpenCtrl] = useState(props.defaultLayerControlOpen ?? true);
   const [openLegend, setOpenLegend] = useState(props.defaultLegendOpen ?? true);
   const [openBasemap, setOpenBasemap] = useState(false);
@@ -508,23 +578,26 @@ export function MapView(props: MapViewProps) {
       const L = (await import("leaflet")).default;
       if (cancelled || !mapEl.current) return;
       setLRef(L);
-      // Default Ismailia / east Egypt bbox roughly
+
       const map = L.map(mapEl.current, {
         zoomControl: true,
         attributionControl: true,
         preferCanvas: true,
-        scrollWheelZoom: false,
-      }).setView([30.6, 32.0], 10);
+        scrollWheelZoom: true,
+        doubleClickZoom: true,
+        touchZoom: true,
+        dragging: true,
+        wheelDebounceTime: 30,
+        wheelPxPerZoomLevel: 80,
+      }).setView([30.59, 32.27], 11);
+
       map.createPane("study-boundary").style.zIndex = "410";
       map.createPane("map-features").style.zIndex = "420";
+      map.createPane("route-lines").style.zIndex = "430";
       map.createPane("transit-lines").style.zIndex = "640";
       map.createPane("transit-stations").style.zIndex = "650";
       mapRef.current = map;
 
-      // Canvas is considerably faster for the land-cover layers, but browsers can
-      // occasionally miss a path click when tens of thousands of shapes share one
-      // renderer.  Keep a lightweight list of rendered Leaflet paths and perform a
-      // second hit-test on the map click so every visible feature remains selectable.
       map.on("click", (event: any) => {
         const point = map.latLngToLayerPoint(event.latlng);
         const keys = Object.keys(layerRefs.current).reverse();
@@ -551,19 +624,19 @@ export function MapView(props: MapViewProps) {
           }
         }
       });
+
       resizeObserver = new ResizeObserver(() => {
         map.invalidateSize({ pan: false });
       });
       resizeObserver.observe(mapEl.current);
       syncCleanupRef.current = props.syncGroup ? registerSyncedMap(props.syncGroup, map) : null;
-      const initialBasemap = basemap;
-      const initialBasemapConfig =
-        initialBasemap === "satellite" && props.satelliteVintage === "2016"
+      const config =
+        basemap === "satellite" && props.satelliteVintage === "2016"
           ? SATELLITE_2016
-          : BASEMAPS[initialBasemap];
-      tileRef.current = L.tileLayer(initialBasemapConfig.url, {
-        attribution: initialBasemapConfig.attribution,
-        className: "className" in initialBasemapConfig ? initialBasemapConfig.className : undefined,
+          : BASEMAPS[basemap];
+      tileRef.current = L.tileLayer(config.url, {
+        attribution: config.attribution,
+        className: "className" in config ? (config as any).className : undefined,
         maxZoom: 19,
       }).addTo(map);
 
@@ -571,28 +644,13 @@ export function MapView(props: MapViewProps) {
         map.fitBounds(props.initialBounds, { padding: [18, 18], maxZoom: 17 });
       }
 
-      // Fit to study area once loaded
       try {
         const fc = await loadMapLayer("Study_Area_Sector");
-        const layer = L.geoJSON(fc as any, {
-          interactive: false,
-          style: {
-            color: "#22d3ee",
-            weight: 2,
-            fillOpacity: 0.04,
-            dashArray: "6 4",
-          },
-        }).addTo(map);
         if (!props.initialBounds) {
-          const boundsLayer = fc.features.length
-            ? layer
-            : L.geoJSON((await loadMapLayer("Land_Cover2026")) as any);
-          requestAnimationFrame(() => {
-            if (cancelled) return;
-            map.invalidateSize({ pan: false });
-            const bounds = boundsLayer.getBounds();
-            if (bounds.isValid()) map.fitBounds(bounds, { padding: [20, 20] });
-          });
+          const studyBounds = L.geoJSON(fc as any).getBounds();
+          if (studyBounds.isValid()) {
+            map.fitBounds(studyBounds, { padding: [24, 24], maxZoom: 11, animate: false });
+          }
         }
       } catch {}
     })();
@@ -600,6 +658,7 @@ export function MapView(props: MapViewProps) {
       cancelled = true;
       resizeObserver?.disconnect();
       if (mapRef.current) {
+        if (transitFitTimerRef.current) clearTimeout(transitFitTimerRef.current);
         syncCleanupRef.current?.();
         syncCleanupRef.current = null;
         mapRef.current.remove();
@@ -609,11 +668,6 @@ export function MapView(props: MapViewProps) {
   }, []);
 
   useEffect(() => {
-    if (props.initialBasemap) return;
-    setBasemap(themeBasemap);
-  }, [props.initialBasemap, themeBasemap]);
-
-  useEffect(() => {
     if (!mapRef.current || !props.initialBounds) return;
     mapRef.current.fitBounds(props.initialBounds, { padding: [18, 18], maxZoom: 17 });
   }, [props.fitBoundsOnChangeKey, props.initialBounds]);
@@ -621,269 +675,346 @@ export function MapView(props: MapViewProps) {
   // Switch basemap
   useEffect(() => {
     if (!mapRef.current || !LRef || !tileRef.current) return;
-    mapRef.current.removeLayer(tileRef.current);
-    const basemapConfig =
+    const config =
       basemap === "satellite" && props.satelliteVintage === "2016"
         ? SATELLITE_2016
         : BASEMAPS[basemap];
-    tileRef.current = LRef.tileLayer(basemapConfig.url, {
-      attribution: basemapConfig.attribution,
-      className: "className" in basemapConfig ? basemapConfig.className : undefined,
+
+    mapRef.current.removeLayer(tileRef.current);
+    tileRef.current = LRef.tileLayer(config.url, {
+      attribution: config.attribution,
+      className: "className" in config ? (config as any).className : undefined,
       maxZoom: 19,
     }).addTo(mapRef.current);
-    tileRef.current.bringToBack();
-  }, [basemap, LRef, props.satelliteVintage]);
+  }, [LRef, basemap, props.satelliteVintage]);
 
-  // Load + update layers when active set changes
+  // Keep the shared road and rail network visible on every main dashboard map.
+  useEffect(() => {
+    if (props.showTransit === false) return;
+    setActive((prev) => {
+      const next = new Set(prev);
+      TRANSPORT_LAYER_KEYS.forEach((key) => next.add(key));
+      return next;
+    });
+  }, [props.showTransit]);
+
+  const filterFn = props.filterFn;
+  const layers = useMemo(() => {
+    if (props.showTransit === false) return props.layers;
+    const transportLines = [...ROAD_LINES, ...TRANSIT_LINES];
+    const extra: LayerSpec[] = transportLines.map((line) => ({
+      ...line,
+      label: lang === "ar" ? line.labelAr : line.labelEn,
+      opacity: ROAD_LAYER_KEYS.includes(line.key) ? 0.95 : 0.9,
+      interactive: false,
+    }));
+    return [...props.layers, ...extra];
+  }, [props.layers, props.showTransit, lang]);
+
+  // Load/toggle layers
   useEffect(() => {
     if (!mapRef.current || !LRef) return;
-    let cancelled = false;
+    const map = mapRef.current;
     const L = LRef;
-    layers.forEach(async (spec) => {
-      const id = spec.key;
-      const isActive = active.has(id);
-      if (!isActive) {
-        if (layerRefs.current[id]) {
-          mapRef.current.removeLayer(layerRefs.current[id]);
-          layerRefs.current[id] = null;
+    let cancelled = false;
+
+    const layerMap = new Map(layers.map((spec) => [spec.key, spec]));
+
+    // Remove layers no longer active or present
+    Object.keys(layerRefs.current).forEach((key) => {
+      if (!active.has(key) || !layerMap.has(key as LayerKey)) {
+        map.removeLayer(layerRefs.current[key]);
+        delete layerRefs.current[key];
+        delete hitTargetsRef.current[key];
+      }
+    });
+
+    const isStyleKeyChanged = previousStyleKey.current !== props.styleChangeKey;
+    previousStyleKey.current = props.styleChangeKey;
+
+    layers.forEach((spec) => {
+      if (!active.has(spec.key)) return;
+      const allowInteraction = spec.interactive ?? true;
+
+      // Update existing layer style if styleKey changed
+      if (layerRefs.current[spec.key]) {
+        if (!isStyleKeyChanged) return;
+        const existingLayer = layerRefs.current[spec.key];
+        const targets = hitTargetsRef.current[spec.key] ?? [];
+        targets.forEach(({ layer: lyr }) => {
+          const feat = lyr.feature;
+          const p = feat?.properties || {};
+          const colorOverride: string | undefined = undefined;
+          resetFeatureLayerStyle(lyr, spec, colorOverride);
+
+          if (allowInteraction && feat) {
+            const isPopupOpened = lyr.isPopupOpen?.();
+            lyr.bindPopup(
+              buildPopupHtml({
+                feature: feat,
+                spec,
+                lang,
+                t,
+                colorOverride,
+              }),
+              { className: "gis-feature-popup" },
+            );
+            if (isPopupOpened) {
+              highlightFeatureLayer(lyr, spec);
+            }
+          }
+        });
+
+        if (existingLayer.setStyle && !existingLayer.eachLayer) {
+          resetFeatureLayerStyle(existingLayer, spec);
         }
-        hitTargetsRef.current[id] = [];
         return;
       }
-      if (layerRefs.current[id]) return;
-      try {
-        const fc = await loadMapLayer(spec.key);
-        if (cancelled || !mapRef.current) return;
-        const displayFc = orderLandCoverForDisplay(fc, spec.key);
-        const isLargeLandCover = spec.key === "Land_Cover2016" || spec.key === "Land_Cover2026";
-        const allowInteraction = spec.interactive ?? true;
-        const filtered = props.filterFn
-          ? {
-              ...displayFc,
-              features: displayFc.features.filter((f) =>
-                props.filterFn!(spec.key, f.properties || {}),
-              ),
-            }
-          : displayFc;
-        const stationColors = new WeakMap<object, string>();
-        hitTargetsRef.current[id] = [];
-        if (spec.type === "point") {
-          filtered.features.forEach((feature, index) => {
-            stationColors.set(feature, stationColor(index, spec.key));
-          });
-        }
 
-        let layer: any;
-        const layerOptions = {
-          interactive: allowInteraction,
-          pane:
-            spec.type === "point"
-              ? "transit-stations"
-              : isTransitLayer(spec.key)
-                ? "transit-lines"
-                : spec.type === "boundary"
-                  ? "study-boundary"
-                  : "map-features",
-          pointToLayer:
-            spec.type === "point"
-              ? (feature: any, latlng: any) => {
-                  const featureColor = stationColors.get(feature) ?? spec.fixedColor ?? "#0ea5e9";
-                  if (spec.pointShape === "firefly") {
-                    const size = Math.max((spec.radius ?? 5.5) * 1.35, 7.5);
-                    const hitSize = size + 12;
-                    return L.marker(latlng, {
-                      pane: "transit-stations",
-                      icon: L.divIcon({
-                        className: "transit-div-icon",
-                        html: `<span class="transit-firefly-marker" style="width:${size}px;height:${size}px;--station-color:${featureColor}"></span>`,
-                        iconSize: [hitSize, hitSize],
-                        iconAnchor: [hitSize / 2, hitSize / 2],
-                      }),
-                    });
-                  }
-                  if (spec.pointShape === "metro") {
-                    const size = (spec.radius ?? 6.5) * 2;
-                    return L.marker(latlng, {
-                      pane: "transit-stations",
-                      icon: L.divIcon({
-                        className: "transit-div-icon",
-                        html: `<span class="transit-metro-marker" style="width:${size}px;height:${size}px;background:${featureColor}">M</span>`,
-                        iconSize: [size, size],
-                        iconAnchor: [size / 2, size / 2],
-                      }),
-                    });
-                  }
-                  return L.circleMarker(latlng, {
-                    pane: "transit-stations",
-                    radius: spec.radius ?? 5.5,
-                    color: "#ffffff",
-                    weight: 2,
-                    fillColor: featureColor,
-                    fillOpacity: 1,
-                    opacity: 1,
-                  });
-                }
-              : undefined,
-          style: (feat: any) => {
-            const p = feat?.properties || {};
-            if (spec.type === "line") {
-              return {
-                color: spec.fixedColor ?? "#22d3ee",
-                weight: spec.weight ?? 3,
-                opacity: spec.opacity ?? 0.9,
-              };
-            }
-            if (spec.type === "boundary") {
-              return {
-                color: spec.fixedColor ?? "#22d3ee",
-                weight: 2,
-                fill: false,
-                fillOpacity: 0,
-                dashArray: "6 4",
-              };
-            }
-            let fill = spec.fixedColor ?? "#64748b";
-            if (spec.styleBy === "use") fill = colorFor(p["وصف_الاستخدام"]);
-            else if (spec.styleBy === "change") fill = changeColor(p["حالة_التغير"]);
-            else if (spec.styleBy === "price2016" || spec.styleBy === "price2026" || spec.styleBy === "priceGrowth") {
-              fill = priceColor(p, spec.styleBy);
-            }
-            if (spec.outlineOnly) {
-              return {
-                color: spec.fixedColor ?? "#ffffff",
-                weight: spec.weight ?? 3,
-                fillColor: fill,
-                fillOpacity: 0,
-                fillRule: "nonzero",
-                opacity: spec.opacity ?? 1,
-              };
-            }
-            return {
-              color: fill,
-              weight: spec.weight ?? 0.5,
-              fillColor: fill,
-              fillOpacity: spec.fillOpacity ?? 0.62,
-              fillRule: "nonzero",
-              opacity: 0.85,
-            };
-          },
-          onEachFeature: (feat: any, lyr: any) => {
-            if (!allowInteraction) return;
-            const p = feat?.properties || {};
-            const lines: string[] = [];
-            const use = p["وصف_الاستخدام"];
-            if (use) lines.push(`<b>${labelFor(use, lang)}</b>`);
-            const change = p["حالة_التغير"];
-            if (change) lines.push(`${t.filters.changeStatus}: ${changeLabel(change, lang)}`);
-            const km2 =
-              p["مساحة_كم2"] ??
-              p["المساحة_كم2"] ??
-              p["مساحة_التغير_كم2"] ??
-              p["مساحة_المنطقة_كم2"] ??
-              (p["SHAPE_Area"] ? p["SHAPE_Area"] / 1e6 : null) ??
-              (p["Shape_Area"] ? p["Shape_Area"] / 1e6 : null);
-            if (km2) lines.push(`${t.common.area}: ${Number(km2).toFixed(3)} ${t.stats.km2}`);
-            const name = p["اسم_المسطح"];
-            if (name) lines.push(`${t.common.name}: ${name}`);
-            const stationName = p[STATION_NAME_FIELD];
-            if (stationName) lines.push(`${t.common.name}: ${stationName}`);
-            if (lines.length) lyr.bindTooltip(lines.join("<br/>"), { sticky: true });
-            if (lines.length || Object.keys(p).length) {
-              lyr.bindPopup(() => buildPopupHtml({ feature: feat, spec, lang, t, colorOverride: stationColors.get(feat) }), {
-                className: "gis-feature-popup",
-                closeButton: true,
-                maxWidth: 350,
-                minWidth: 230,
+      // Add new layer
+      (async () => {
+        try {
+          const fc = await loadMapLayer(spec.key);
+          if (cancelled) return;
+
+          const rawFeatures = Array.isArray(fc.features) ? fc.features : [];
+          const features = filterFn
+            ? rawFeatures.filter((feat: any) => filterFn(spec.key, feat.properties ?? {}))
+            : rawFeatures;
+
+          const activeFc = { ...fc, features };
+          const isLargeDataset = features.length > LARGE_LAYER_BATCH_SIZE;
+          const layerInteractive = allowInteraction && !isLargeDataset;
+          const targetPane =
+            spec.key === "Study_Area_Sector"
+              ? "study-boundary"
+              : spec.type === "point"
+                ? "transit-stations"
+                : spec.type === "line"
+                  ? TRANSIT_LAYER_KEYS.includes(spec.key)
+                    ? "transit-lines"
+                    : "route-lines"
+                  : "map-features";
+
+          const hitTargets: Array<{ layer: any; spec: LayerSpec }> = [];
+          const layer = L.geoJSON(undefined, {
+            pane: targetPane,
+            renderer: spec.type === "line" ? L.svg({ pane: targetPane, padding: 0.5 }) : undefined,
+            interactive: layerInteractive,
+            pointToLayer: (feat: any, latlng: any) => {
+              const colorOverride: string | undefined = undefined;
+              const isFirefly = spec.pointShape === "firefly";
+              const isMetro = spec.pointShape === "metro";
+              const pointColor = colorOverride ?? spec.fixedColor ?? "#22c55e";
+
+              if (isMetro) {
+                const iconHtml = `<div class="transit-metro-marker" style="--station-color:${pointColor}"><span>M</span></div>`;
+                const icon = L.divIcon({
+                  className: "transit-metro-div-icon",
+                  html: iconHtml,
+                  iconSize: [22, 22],
+                  iconAnchor: [11, 11],
+                });
+                return L.marker(latlng, { icon, pane: targetPane });
+              }
+
+              if (isFirefly) {
+                const iconHtml = `<div class="transit-firefly-marker" style="--station-color:${pointColor}"></div>`;
+                const icon = L.divIcon({
+                  className: "transit-firefly-div-icon",
+                  html: iconHtml,
+                  iconSize: [18, 18],
+                  iconAnchor: [9, 9],
+                });
+                return L.marker(latlng, { icon, pane: targetPane });
+              }
+
+              return L.circleMarker(latlng, {
+                pane: targetPane,
+                radius: spec.radius ?? 7,
+                color: "#ffffff",
+                weight: 1.5,
+                fillColor: pointColor,
+                fillOpacity: spec.fillOpacity ?? 0.9,
               });
+            },
+            style: (feat: any) => {
+              const p = feat?.properties || {};
+              if (spec.type === "line") {
+                return {
+                  color: spec.fixedColor ?? "#22d3ee",
+                  weight: spec.weight ?? 3,
+                  opacity: spec.opacity ?? 0.9,
+                  dashArray: spec.dashArray ?? "",
+                  dashOffset: spec.dashOffset,
+                  lineCap: spec.lineCap ?? "round",
+                  lineJoin: "round",
+                  className: "animated-line-path",
+                };
+              }
+              if (spec.type === "boundary") {
+                return {
+                  color: spec.fixedColor ?? "#22d3ee",
+                  weight: spec.weight ?? 2.2,
+                  opacity: spec.opacity ?? 0.9,
+                  fill: true,
+                  fillColor: spec.fillColor ?? "#ffe7a3",
+                  fillOpacity: spec.fillOpacity ?? 0.16,
+                  dashArray: spec.dashArray ?? "8 6",
+                };
+              }
+              let fill = spec.fixedColor ?? "#64748b";
+              let stroke = fill;
+              if (spec.styleBy === "use") fill = classificationColor(p);
+              else if (spec.styleBy === "agriculture") {
+                const agricultural = agriculturalStyle(p);
+                fill = agricultural.fill;
+                stroke = agricultural.stroke;
+              }
+              else if (spec.styleBy === "change") fill = changeColor(p["حالة_التغير"]);
+              else if (spec.styleBy === "price2016" || spec.styleBy === "price2026" || spec.styleBy === "priceGrowth") {
+                fill = priceColor(p, spec.styleBy);
+              }
+              if (spec.styleBy !== "agriculture") stroke = fill;
+              if (spec.outlineOnly) {
+                return {
+                  color: spec.fixedColor ?? "#ffffff",
+                  weight: spec.weight ?? 3,
+                  fillColor: fill,
+                  fillOpacity: 0,
+                  fillRule: "nonzero",
+                  opacity: spec.opacity ?? 1,
+                };
+              }
+
+              return {
+                color: stroke,
+                weight: spec.weight ?? 0.5,
+                fillColor: fill,
+                fillOpacity: spec.fillOpacity ?? 0.76,
+                fillRule: "nonzero",
+                opacity: 0.95,
+                // Large parcel layers are already simplified on export. A high
+                // Leaflet smoothFactor collapses small four-sided parcels into
+                // triangles at overview zoom levels and corrupts the choropleth.
+                smoothFactor: spec.smoothFactor ?? (isLargeDataset ? 0.35 : 1),
+              };
+            },
+            onEachFeature: (feat: any, lyr: any) => {
+              if (spec.type === "line") {
+                lyr.on("add", () => {
+                  const element = lyr.getElement?.();
+                  if (!element) return;
+                  element.classList.add("map-road-solid");
+                });
+              }
+              if (!layerInteractive) return;
+              const p = feat?.properties || {};
+              const lines: string[] = [];
+              const use = p["وصف_الاستخدام"];
+              if (use) lines.push(`<b>${labelFor(use, lang)}</b>`);
+
+              const change = p["حالة_التغير"];
+              if (change) lines.push(`${t.filters.changeStatus}: ${changeLabel(change, lang)}`);
+              const km2 =
+                p["مساحة_كم2"] ??
+                p["المساحة_كم2"] ??
+                p["مساحة_التغير_كم2"] ??
+                p["مساحة_المنطقة_كم2"] ??
+                (p["SHAPE_Area"] ? p["SHAPE_Area"] / 1e6 : null) ??
+                (p["Shape_Area"] ? p["Shape_Area"] / 1e6 : null);
+              if (km2) lines.push(`${t.common.area}: ${Number(km2).toFixed(3)} ${t.stats.km2}`);
+              const name = p["اسم_المسطح"];
+              if (name) lines.push(`${t.common.name}: ${name}`);
+              const transitName = p["اسم_الخط"];
+              if (transitName) lines.push(`${t.common.name}: ${transitName}`);
+
+              if (lines.length) lyr.bindTooltip(lines.join("<br/>"), { sticky: true });
+              if (lines.length || Object.keys(p).length) {
+                const colorOverride: string | undefined = undefined;
+
+                lyr.bindPopup(
+                  buildPopupHtml({
+                    feature: feat,
+                    spec,
+                    lang,
+                    t,
+                    colorOverride,
+                  }),
+                  { className: "gis-feature-popup" },
+                );
+
+                lyr.on("popupopen", () => {
+                  highlightFeatureLayer(lyr, spec);
+                });
+
+                lyr.on("popupclose", () => {
+                  resetFeatureLayerStyle(lyr, spec, colorOverride);
+                });
+
+                hitTargets.push({ layer: lyr, spec });
+              }
+            },
+          });
+
+          if (!cancelled && active.has(spec.key)) {
+            layer.addTo(map);
+            layerRefs.current[spec.key] = layer;
+            hitTargetsRef.current[spec.key] = hitTargets;
+
+            if (isLargeDataset) {
+              for (let i = 0; i < features.length; i += LARGE_LAYER_BATCH_SIZE) {
+                if (cancelled || !active.has(spec.key)) break;
+                layer.addData({ type: "FeatureCollection", features: features.slice(i, i + LARGE_LAYER_BATCH_SIZE) });
+                await new Promise((res) => setTimeout(res, 0));
+              }
+            } else {
+              layer.addData(activeFc);
             }
-            hitTargetsRef.current[id]?.push({ layer: lyr, spec });
-            lyr.on({
-              mouseover: () => {
-                highlightFeatureLayer(lyr, spec);
-              },
-              mouseout: () => {
-                if (!lyr.isPopupOpen?.()) {
-                  layer.resetStyle?.(lyr);
-                  if (spec.type === "point") lyr.setRadius?.(spec.radius ?? 7);
+
+            if (TRANSIT_LAYER_KEYS.includes(spec.key) && !hasFittedTransitRef.current) {
+              if (transitFitTimerRef.current) clearTimeout(transitFitTimerRef.current);
+              transitFitTimerRef.current = setTimeout(() => {
+                if (cancelled || !mapRef.current) return;
+                const bounds = L.latLngBounds([]);
+                ["Study_Area_Sector", ...TRANSIT_LAYER_KEYS].forEach((key) => {
+                  const visibleLayer = layerRefs.current[key];
+                  const layerBounds = visibleLayer?.getBounds?.();
+                  if (layerBounds?.isValid?.()) bounds.extend(layerBounds);
+                });
+                if (bounds.isValid()) {
+                  map.fitBounds(bounds, { padding: [28, 28], maxZoom: 10, animate: false });
+                  hasFittedTransitRef.current = true;
                 }
-              },
-              click: (event: any) => {
-                highlightFeatureLayer(lyr, spec);
-                lyr.openPopup?.(event?.latlng);
-              },
-              popupclose: () => {
-                layer.resetStyle?.(lyr);
-                if (spec.type === "point") lyr.setRadius?.(spec.radius ?? 7);
-              },
-            });
-          },
-        };
-        layer = L.geoJSON(undefined, layerOptions);
-        if (cancelled || !mapRef.current) return;
-        layer.addTo(mapRef.current);
-        layerRefs.current[id] = layer;
-
-        if (isLargeLandCover) {
-          for (let index = 0; index < filtered.features.length; index += LARGE_LAYER_BATCH_SIZE) {
-            if (cancelled || layerRefs.current[id] !== layer) return;
-            layer.addData({
-              ...filtered,
-              features: filtered.features.slice(index, index + LARGE_LAYER_BATCH_SIZE),
-            } as any);
-            await yieldToBrowser();
+              }, 220);
+            }
           }
-        } else {
-          layer.addData(filtered as any);
-        }
-      } catch (e) {
-        if (!cancelled) console.error("layer load failed", spec.key, e);
-      }
+        } catch {}
+      })();
     });
-    return () => {
-      cancelled = true;
-    };
-  }, [active, LRef, layers, lang, props.filterFn, t]);
+  }, [LRef, active, filterFn, layers, lang, t, props.styleChangeKey]);
 
-  // Re-render when filterFn changes: clear existing layers so they reload with new filter
-  useEffect(() => {
-    if (!mapRef.current) return;
-    Object.entries(layerRefs.current).forEach(([id, lyr]) => {
-      if (lyr) {
-        mapRef.current.removeLayer(lyr);
-        layerRefs.current[id] = null;
-      }
-      hitTargetsRef.current[id] = [];
-    });
-    setActive((a) => new Set(a));
-  }, [props.filterFn]);
-
-  useEffect(() => {
-    if (previousStyleKey.current === props.styleChangeKey) return;
-    previousStyleKey.current = props.styleChangeKey;
-    if (!mapRef.current) return;
-    Object.entries(layerRefs.current).forEach(([id, lyr]) => {
-      if (lyr) {
-        mapRef.current.removeLayer(lyr);
-        layerRefs.current[id] = null;
-      }
-    });
-    setActive((current) => new Set(current));
-  }, [props.styleChangeKey]);
-
-  const toggle = (k: string) => {
+  const toggle = (key: string) => {
     setActive((prev) => {
-      const n = new Set(prev);
-      if (n.has(k)) n.delete(k);
-      else n.add(k);
-      return n;
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
     });
   };
 
-  const fullscreen = () => {
-    const el = mapEl.current?.parentElement;
+  const fullscreen = async () => {
+    const el = mapEl.current?.parentElement as (HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }) | null;
     if (!el) return;
-    if (document.fullscreenElement) document.exitFullscreen();
-    else el.requestFullscreen?.();
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else if (el.requestFullscreen) await el.requestFullscreen();
+      else await el.webkitRequestFullscreen?.();
+    } catch {
+      return;
+    } finally {
+      window.setTimeout(() => mapRef.current?.invalidateSize({ pan: false }), 80);
+    }
   };
 
   return (
@@ -895,15 +1026,15 @@ export function MapView(props: MapViewProps) {
 
       {/* Top-end controls */}
       <div
-        className={`absolute top-3 z-[500] flex flex-col gap-2 ${
-          dir === "rtl" ? "left-3" : "right-3"
+        className={`absolute top-3 z-[700] flex flex-col gap-2 ${
+          dir === "rtl" ? "left-[4.25rem]" : "right-3"
         }`}
       >
-        <div className="flex gap-1">
+        <div className="flex gap-1.5 flex-wrap justify-end">
+          {/* Standard map controls */}
           <button
             onClick={() => setOpenCtrl((v) => !v)}
             aria-label={t.map.layers}
-            aria-expanded={openCtrl}
             className={`glass surface-hover grid h-9 w-9 place-items-center rounded-lg border text-foreground hover:text-[var(--brand)] ${openCtrl ? "border-[var(--brand)]/60 text-[var(--brand)]" : ""}`}
             title={t.map.layers}
           >
@@ -912,7 +1043,6 @@ export function MapView(props: MapViewProps) {
           <button
             onClick={() => setOpenBasemap((value) => !value)}
             aria-label={t.map.basemap ?? "Basemap"}
-            aria-expanded={openBasemap}
             className={`glass surface-hover grid h-9 w-9 place-items-center rounded-lg border text-foreground hover:text-[var(--brand)] ${openBasemap ? "border-[var(--brand)]/60 text-[var(--brand)]" : ""}`}
             title={t.map.basemap ?? "Basemap"}
           >
@@ -927,61 +1057,57 @@ export function MapView(props: MapViewProps) {
             <Maximize2 className="h-4 w-4" />
           </button>
         </div>
+
+        {/* Basemap Switcher Popover */}
         <AnimatePresence>
           {openBasemap && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              className="glass surface-hover min-w-28 rounded-lg border p-1.5"
+              initial={{ opacity: 0, y: -8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.95 }}
+              className="glass surface-hover flex flex-col gap-1 rounded-xl border p-1.5 shadow-xl backdrop-blur-md"
             >
-              {(Object.keys(BASEMAPS) as Basemap[]).map((b) => (
+              {(["satellite", "streets", "blue", "dark"] as Basemap[]).map((key) => (
                 <button
-                  key={b}
-                  onClick={() => { setBasemap(b); setOpenBasemap(false); }}
-                  aria-label={`${t.map.basemap ?? "Basemap"}: ${t.map[b]}`}
-                  aria-pressed={basemap === b}
-                  className={`block w-full truncate rounded-md px-2.5 py-1.5 text-center text-[11px] font-bold ${
-                    basemap === b
-                      ? "bg-[var(--brand)]/20 text-[var(--brand)]"
-                      : "text-muted-foreground hover:text-foreground"
+                  key={key}
+                  onClick={() => {
+                    setBasemap(key);
+                    setOpenBasemap(false);
+                  }}
+                  className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                    basemap === key
+                      ? "bg-[var(--brand)] text-white"
+                      : "text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  {t.map[b]}
+                  <MapIcon className="h-3.5 w-3.5" />
+                  <span className="capitalize">
+                    {key === "blue"
+                      ? lang === "ar"
+                        ? "فاتحة"
+                        : "Light"
+                      : key === "streets"
+                        ? lang === "ar"
+                          ? "شوارع"
+                          : "Streets"
+                        : key === "satellite"
+                          ? props.satelliteVintage === "2016"
+                            ? lang === "ar"
+                              ? "قمر صناعي 2016"
+                              : "Satellite 2016"
+                            : lang === "ar"
+                              ? "قمر صناعي"
+                              : "Satellite"
+                          : lang === "ar"
+                            ? "داكنة"
+                            : "Dark"}
+                  </span>
                 </button>
               ))}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Transit symbology key — bottom-left */}
-      {props.showTransit !== false && (!openCtrl || props.showLayerControl === false) && (
-        <div
-          dir={lang === "ar" ? "rtl" : "ltr"}
-          className="glass surface-hover absolute !bottom-3 !left-3 !right-auto !top-auto z-[500] w-[min(270px,calc(100%-1.5rem))] rounded-lg border p-2 shadow-lg"
-          style={{ position: "absolute", left: "0.75rem", bottom: "0.75rem", right: "auto", top: "auto" }}
-        >
-          <p className="mb-1.5 text-[10px] font-extrabold text-foreground">
-            {lang === "ar" ? "النقل السريع" : "Rapid transit"}
-          </p>
-          <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-            {layers.filter((layer) => isTransitLayer(layer.key)).map((layer) => (
-              <li key={layer.key} className="flex items-center justify-between gap-2 text-[10px] font-bold text-foreground/90">
-                <span className="truncate" title={layer.label}>{layer.label}</span>
-                {layer.type === "line" ? (
-                  <span className="inline-block h-1 w-6 shrink-0 rounded-full shadow-sm" style={{ background: layer.fixedColor }} />
-                ) : (
-                  <span
-                    className={`inline-block h-3 w-3 shrink-0 border border-white shadow-sm ring-1 ring-foreground/25 ${layer.pointShape === "firefly" ? "transit-firefly-swatch rounded-full" : "rounded-full"}`}
-                    style={{ background: MULTICOLOR_STATIONS }}
-                  >{layer.pointShape === "metro" && <span className="grid h-full place-items-center text-[6px] font-black leading-none text-white">M</span>}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Layer panel */}
       <AnimatePresence>
@@ -993,9 +1119,9 @@ export function MapView(props: MapViewProps) {
             className="absolute bottom-3 left-3 top-14 z-[500] flex w-56 max-w-[calc(100%-1.5rem)] items-end overflow-hidden"
           >
             <div className="glass surface-hover flex max-h-full w-full min-h-0 flex-col overflow-hidden rounded-xl border p-3">
-              <div className="mb-2 flex items-center gap-2">
-                <MapIcon className="h-3.5 w-3.5 text-[var(--brand)]" />
-                <p className="text-sm font-extrabold text-foreground">{t.map.layers}</p>
+              <div className="relative mb-2 flex min-h-6 items-center justify-center">
+                <MapIcon className="absolute start-0 h-3.5 w-3.5 text-[var(--brand)]" />
+                <p className="px-6 text-center text-sm font-extrabold text-foreground">{t.map.layers}</p>
               </div>
               <ul className="min-h-0 space-y-1.5 overflow-y-auto pe-1">
                 {layers.map((l) => (
@@ -1007,19 +1133,13 @@ export function MapView(props: MapViewProps) {
                         onChange={() => toggle(l.key)}
                         className="h-3.5 w-3.5 shrink-0 accent-[var(--brand)]"
                       />
+                      {l.type === "line" && (
+                        <svg className="h-3 w-7 shrink-0 overflow-visible" viewBox="0 0 28 12" aria-hidden="true">
+                          <line x1="1" y1="6" x2="27" y2="6" stroke={l.fixedColor} strokeWidth={l.weight ?? 3} strokeDasharray={l.dashArray} strokeDashoffset={l.dashOffset} strokeLinecap={l.lineCap ?? "round"} />
+                        </svg>
+                      )}
                       <span className="truncate" title={l.label}>{l.label}</span>
                     </label>
-                    {l.fixedColor &&
-                      (l.type === "line" ? (
-                        <span className="inline-block h-1 w-6 shrink-0 rounded-full shadow-sm" style={{ background: l.fixedColor }} />
-                      ) : l.type === "point" ? (
-                        <span
-                          className={`inline-block h-3 w-3 shrink-0 border border-white shadow-sm ring-1 ring-foreground/25 ${l.pointShape === "firefly" ? "transit-firefly-swatch rounded-full" : "rounded-full"}`}
-                          style={{ background: MULTICOLOR_STATIONS }}
-                        >{l.pointShape === "metro" && <span className="grid h-full place-items-center text-[6px] font-black leading-none text-white">M</span>}</span>
-                      ) : (
-                        <span className="inline-block h-3 w-3 rounded-sm border border-foreground/20" style={{ background: l.fixedColor }} />
-                      ))}
                   </li>
                 ))}
               </ul>
@@ -1030,50 +1150,47 @@ export function MapView(props: MapViewProps) {
 
       {/* Legend bottom-end */}
       {props.showLegend && props.legendItems && props.legendItems.length > 0 && (
-        <div className="absolute bottom-3 right-3 top-3 z-[500] flex max-w-[calc(100%-1.5rem)] flex-col items-end justify-end gap-1.5 overflow-hidden">
+        <div className="pointer-events-none absolute bottom-3 right-3 top-3 z-[500] flex max-w-[calc(100%-1.5rem)] flex-col items-end justify-end gap-1.5 overflow-hidden">
           <AnimatePresence>
             {openLegend && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
-                className={`glass surface-hover flex min-h-0 max-w-full flex-col overflow-hidden rounded-xl border p-2.5 sm:p-3 ${
+                className={`glass surface-hover pointer-events-auto flex min-h-0 max-w-full flex-col overflow-y-auto rounded-xl border p-2.5 sm:p-3 ${
                   props.legendType === "gradient"
                     ? "w-[min(250px,calc(100vw-2.25rem))]"
-                    : "w-[min(210px,calc(100vw-2.25rem))]"
+                    : "w-[min(250px,calc(100vw-2.25rem))]"
                 }`}
               >
-                <p className="text-sm font-black text-foreground">{props.legendTitle ?? t.map.legend}</p>
-                {props.legendHint && (
-                  <p className="mt-1 text-[9px] font-semibold leading-4 text-muted-foreground">{props.legendHint}</p>
+                {props.showLegend && props.legendItems && props.legendItems.length > 0 && (
+                  <>
+                    <p className="text-center text-sm font-black text-foreground">{props.legendTitle ?? t.map.legend}</p>
+                    {props.legendHint && (
+                      <p className="mt-1 text-center text-[9px] font-semibold leading-4 text-muted-foreground">{props.legendHint}</p>
+                    )}
+                    {props.legendType === "gradient" && (
+                      <div className="my-2.5">
+                        <div
+                          className="h-4 rounded-full border border-border shadow-inner"
+                          style={{ background: `linear-gradient(to ${dir === "rtl" ? "left" : "right"}, ${props.legendItems.map((item) => item.color).join(", ")})` }}
+                        />
+                        <div className="mt-1 flex justify-between text-[9px] font-extrabold text-muted-foreground">
+                          <span>{lang === "ar" ? "أقل" : "Lower"}</span>
+                          <span>{lang === "ar" ? "أعلى" : "Higher"}</span>
+                        </div>
+                      </div>
+                    )}
+                    <ul className="grid grid-cols-1 gap-1 pe-1 sm:gap-1.5">
+                      {props.legendItems.map((it, i) => (
+                        <li key={i} className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-md border border-border/70 bg-card/70 px-2 py-0.5 text-[10px] sm:py-1">
+                          <span className="min-w-0 truncate text-right font-bold text-foreground/90" title={it.label}>{it.label}</span>
+                          <span className="inline-block h-3.5 w-7 rounded-full border border-foreground/20" style={{ background: it.color }} />
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
-                {props.legendType === "gradient" && (
-                  <div className="my-2.5">
-                    <div
-                      className="h-4 rounded-full border border-border shadow-inner"
-                      style={{
-                        background: `linear-gradient(to ${dir === "rtl" ? "left" : "right"}, ${props.legendItems.map((item) => item.color).join(", ")})`,
-                      }}
-                    />
-                    <div className="mt-1 flex justify-between text-[9px] font-extrabold text-muted-foreground">
-                      <span>{lang === "ar" ? "أقل" : "Lower"}</span>
-                      <span>{lang === "ar" ? "أعلى" : "Higher"}</span>
-                    </div>
-                  </div>
-                )}
-                <ul className="grid min-h-0 grid-cols-1 gap-1 overflow-y-auto pe-1 sm:gap-1.5">
-                  {props.legendItems.map((it, i) => (
-                    <li key={i} className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-md border border-border/70 bg-card/70 px-2 py-0.5 text-[10px] sm:py-1">
-                      <span className="min-w-0 truncate text-right font-bold text-foreground/90" title={it.label}>
-                        {it.label}
-                      </span>
-                      <span
-                        className="inline-block h-3.5 w-7 rounded-full border border-foreground/20"
-                        style={{ background: it.color }}
-                      />
-                    </li>
-                  ))}
-                </ul>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1082,7 +1199,7 @@ export function MapView(props: MapViewProps) {
             onClick={() => setOpenLegend((value) => !value)}
             aria-label={t.map.legend}
             aria-expanded={openLegend}
-            className={`glass surface-hover flex h-9 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-bold text-foreground ${openLegend ? "border-[var(--brand)]/60 text-[var(--brand)]" : ""}`}
+            className={`glass surface-hover pointer-events-auto flex h-9 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-bold text-foreground ${openLegend ? "border-[var(--brand)]/60 text-[var(--brand)]" : ""}`}
           >
             <MapIcon className="h-4 w-4" />
             {t.map.legend}

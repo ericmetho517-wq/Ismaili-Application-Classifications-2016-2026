@@ -1,26 +1,37 @@
 export type ColorEntry = { color: string; labelAr: string; labelEn: string };
 
+export const MAP_COLORS = {
+  studyArea: "#073b88",
+  axisRoad: "#e31a1c",
+  urban: "#f97316",
+  agricultural: "#22c55e",
+  industrial: "#a855f7",
+  water: "#7dd3fc",
+  vacant: "#f6c453",
+  services: "#64748b",
+} as const;
+
 const UNSPECIFIED = "غير محدد";
 
 export const USE_COLORS: Record<string, ColorEntry> = {
-  "حضري / عمراني": { color: "#ef4444", labelAr: "حضري / عمراني", labelEn: "Urban / Residential" },
-  "زراعي": { color: "#22c55e", labelAr: "زراعي", labelEn: "Agricultural" },
-  "صناعي": { color: "#a855f7", labelAr: "صناعي", labelEn: "Industrial" },
-  "ارض فضاء": { color: "#fbbf24", labelAr: "أرض فضاء", labelEn: "Vacant land" },
-  "منطقة عسكرية": { color: "#6b7280", labelAr: "منطقة عسكرية", labelEn: "Military area" },
-  "مطار": { color: "#0ea5e9", labelAr: "مطار", labelEn: "Airport" },
-  "طرق": { color: "#94a3b8", labelAr: "طرق", labelEn: "Roads" },
-  "خدمات": { color: "#14b8a6", labelAr: "خدمات", labelEn: "Services" },
-  "تجاري": { color: "#f43f5e", labelAr: "تجاري", labelEn: "Commercial" },
-  "مياه": { color: "#3b82f6", labelAr: "مياه", labelEn: "Water" },
-  "مقابر": { color: "#78716c", labelAr: "مقابر", labelEn: "Cemetery" },
-  "خضراء / غابات": { color: "#16a34a", labelAr: "خضراء / غابات", labelEn: "Green / Forest" },
-  "محاجر": { color: "#b45309", labelAr: "محاجر", labelEn: "Quarries" },
-  "أخرى": { color: "#64748b", labelAr: "أخرى", labelEn: "Other" },
-  [UNSPECIFIED]: { color: "#475569", labelAr: UNSPECIFIED, labelEn: "Unspecified" },
+  "حضري / عمراني": { color: MAP_COLORS.urban, labelAr: "العمران", labelEn: "Urban" },
+  "زراعي": { color: MAP_COLORS.agricultural, labelAr: "الزراعة", labelEn: "Agriculture" },
+  "صناعي": { color: MAP_COLORS.industrial, labelAr: "الصناعة", labelEn: "Industrial" },
+  "ارض فضاء": { color: MAP_COLORS.vacant, labelAr: "أرض فضاء", labelEn: "Vacant land" },
+  "منطقة عسكرية": { color: MAP_COLORS.services, labelAr: "منطقة عسكرية", labelEn: "Military area" },
+  "مطار": { color: MAP_COLORS.services, labelAr: "مطار", labelEn: "Airport" },
+  "طرق": { color: MAP_COLORS.services, labelAr: "طرق", labelEn: "Roads" },
+  "خدمات": { color: MAP_COLORS.services, labelAr: "الخدمات", labelEn: "Services" },
+  "تجاري": { color: MAP_COLORS.services, labelAr: "تجاري", labelEn: "Commercial" },
+  "مياه": { color: MAP_COLORS.services, labelAr: "مياه", labelEn: "Water" },
+  "مقابر": { color: MAP_COLORS.services, labelAr: "مقابر", labelEn: "Cemetery" },
+  "خضراء / غابات": { color: MAP_COLORS.services, labelAr: "خضراء / غابات", labelEn: "Green / Forest" },
+  "محاجر": { color: MAP_COLORS.services, labelAr: "محاجر", labelEn: "Quarries" },
+  "أخرى": { color: MAP_COLORS.services, labelAr: "أخرى", labelEn: "Other" },
+  [UNSPECIFIED]: { color: MAP_COLORS.services, labelAr: UNSPECIFIED, labelEn: "Unspecified" },
 };
 
-export const DEFAULT_COLOR = "#64748b";
+export const DEFAULT_COLOR = "var(--muted-foreground)";
 
 const NEW_GDB_CODE_MAP: Record<string, string> = {
   "0": "زراعي",
@@ -30,13 +41,13 @@ const NEW_GDB_CODE_MAP: Record<string, string> = {
   "4": "منطقة عسكرية",
   "5": "خدمات",
   "6": "خدمات",
-  "7": "مقابر",
+  "7": "خدمات",
   "8": "مياه",
   "10": "طرق",
   "11": "خدمات",
   "12": "خدمات",
   "13": "خدمات",
-  "14": "تجاري",
+  "14": "خدمات",
   "15": "خضراء / غابات",
   "111": "خدمات",
 };

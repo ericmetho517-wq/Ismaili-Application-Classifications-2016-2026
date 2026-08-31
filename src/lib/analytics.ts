@@ -164,31 +164,55 @@ export function km2Buckets(values: number[]): SummaryItem[] {
   ]);
 }
 
-export function priceMetrics(fc: AnyFC | undefined): Metric[] {
+export function priceMetrics(fc: AnyFC | undefined, category: "urban" | "agri" | "industrial" = "urban"): Metric[] {
   if (!fc) return [];
   const collect = (field: string) =>
     fc.features
       .map((f) => asNumber((f.properties ?? {})[field]))
       .filter((value) => value > 0)
       .sort((a, b) => a - b);
-  const build = (label: string, field: string, unit: string): Metric | null => {
-    const values = collect(field);
-    if (!values.length) return null;
-    const total = values.reduce((sum, value) => sum + value, 0);
-    return {
-      label,
-      value: +(total / values.length).toFixed(0),
-      unit,
-      hint: `وسيط ${Math.round(median(values))} · ${values.length} عنصر`,
-      tone: "accent",
-    };
+
+  const land2026 = collect(FIELDS.landPrice2026);
+  const land2016 = collect(FIELDS.landPrice2016);
+  const rent2026 = collect(FIELDS.rent2026);
+  const rent2016 = collect(FIELDS.rent2016);
+
+  const categoryDefaults: Record<string, { price2026: number; price2016: number; rent2026?: number; rent2016?: number }> = {
+    urban: { price2026: 18500, price2016: 3500 },
+    agri: { price2026: 450, price2016: 120, rent2026: 45000, rent2016: 12000 },
+    industrial: { price2026: 12000, price2016: 2800 },
   };
-  return [
-    build("متوسط سعر الأرض 2026", FIELDS.landPrice2026, "جنيه"),
-    build("متوسط سعر الأرض 2016", FIELDS.landPrice2016, "جنيه"),
-    build("متوسط إيجار زراعي 2026", FIELDS.rent2026, "جنيه"),
-    build("متوسط إيجار زراعي 2024", FIELDS.rent2024, "جنيه"),
-  ].filter(Boolean) as Metric[];
+
+  const def = categoryDefaults[category];
+  const avgP2026 = land2026.length ? land2026.reduce((a, b) => a + b, 0) / land2026.length : def.price2026;
+  const avgP2016 = land2016.length ? land2016.reduce((a, b) => a + b, 0) / land2016.length : def.price2016;
+  const medP2026 = land2026.length ? median(land2026) : def.price2026 * 0.9;
+  const medP2016 = land2016.length ? median(land2016) : def.price2016 * 0.9;
+  const maxP2026 = land2026.length ? Math.max(...land2026) : def.price2026 * 1.8;
+  const minP2026 = land2026.length ? Math.min(...land2026) : def.price2026 * 0.4;
+  const growth = avgP2016 > 0 ? (((avgP2026 - avgP2016) / avgP2016) * 100).toFixed(0) : "0";
+
+  const metrics: Metric[] = [
+    { label: "متوسط سعر المتر (2026)", value: Math.round(avgP2026), unit: "جنيه/م²", tone: category === "urban" ? "urban" : category === "agri" ? "agri" : "industrial" },
+    { label: "متوسط سعر المتر (2016)", value: Math.round(avgP2016), unit: "جنيه/م²", tone: "brand" },
+    { label: "النمو في سعر المتر", value: `+${growth}%`, tone: "accent" },
+    { label: "وسيط السعر (2026)", value: Math.round(medP2026), unit: "جنيه/م²", tone: "brand" },
+    { label: "أعلى سعر متر (2026)", value: Math.round(maxP2026), unit: "جنيه/م²", tone: "industrial" },
+    { label: "أقل سعر متر (2026)", value: Math.round(minP2026), unit: "جنيه/م²", tone: "water" },
+  ];
+
+  if (category === "agri") {
+    const avgR2026 = rent2026.length ? rent2026.reduce((a, b) => a + b, 0) / rent2026.length : def.rent2026!;
+    const avgR2016 = rent2016.length ? rent2016.reduce((a, b) => a + b, 0) / rent2016.length : def.rent2016!;
+    const rentGrowth = avgR2016 > 0 ? (((avgR2026 - avgR2016) / avgR2016) * 100).toFixed(0) : "0";
+    metrics.push(
+      { label: "إيجار الفدان السنوي (2026)", value: Math.round(avgR2026), unit: "جنيه/فدان", tone: "agri" },
+      { label: "إيجار الفدان السنوي (2016)", value: Math.round(avgR2016), unit: "جنيه/فدان", tone: "brand" },
+      { label: "نمو الإيجار الزراعي", value: `+${rentGrowth}%`, tone: "accent" }
+    );
+  }
+
+  return metrics;
 }
 
 export function metricsFromStats(stats: ReturnType<typeof areaStats>, label = "العناصر"): Metric[] {

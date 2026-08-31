@@ -7,7 +7,7 @@ import { dict, LangContext, type Lang } from "../lib/i18n";
 import { THEME_STORAGE_KEY, ThemeContext, type Theme } from "../lib/theme";
 import { Sidebar } from "../components/Sidebar";
 import { MobileNav } from "../components/MobileNav";
-import logoUrl from "../assets/logo.png";
+import logoUrl from "../assets/transport-ministry-logo.jpg";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -53,7 +53,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/png", href: logoUrl },
+      { rel: "icon", type: "image/jpeg", href: logoUrl },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap",
@@ -86,7 +86,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [lang, setLang] = useState<Lang>("ar");
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const mainRef = useRef<HTMLElement>(null);
   const dir = lang === "ar" ? "rtl" : "ltr";
 

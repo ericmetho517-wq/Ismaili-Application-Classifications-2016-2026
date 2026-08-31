@@ -26,6 +26,7 @@ const valueMap: Record<string, string> = {
   "ارض زراعية": "Agricultural land",
   "أرض زراعية": "Agricultural land",
   "صوب زراعية": "Greenhouses",
+  "مزارع حيواني": "Livestock farms",
   "خدمات": "Services",
   "تجاري": "Commercial",
   "طرق": "Roads",
@@ -56,6 +57,14 @@ const valueMap: Record<string, string> = {
   "مخازن": "Warehouses",
   "مصنع": "Factory",
   "شركة": "Company",
+  "مدارس": "Schools",
+  "جامعات": "Universities",
+  "مسجد": "Mosque",
+  "كنيسة": "Church",
+  "نادي": "Club",
+  "قرية سياحية": "Tourist village",
+  "فندق": "Hotel",
+  "محجر": "Quarry",
   "الإسماعيلية": "Ismailia",
 };
 
