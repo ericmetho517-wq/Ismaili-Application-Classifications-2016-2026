@@ -79,10 +79,13 @@ function PricesPage() {
   const landUseLegend = useMemo(() => landUseLegendItems(lang), [lang]);
   const mapFilter = useMemo(() => (key: string, props: Record<string, unknown>) => {
     if (category === "all" || (key !== "Land_Cover2016" && key !== "Land_Cover2026")) return true;
-    const domain = pricingDomain(String(props[FIELDS.useDesc] ?? ""), asNumber(props[FIELDS.useCode]));
+    const useDesc = props[FIELDS.useDesc] ?? props["\u0648\u0635\u0641_\u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645"] ?? "";
+    const useCode = props[FIELDS.useCode] ?? props["\u0627\u0633\u062a\u062e\u062f\u0627\u0645_\u0627\u0644\u0623\u0631\u0636"];
+    const domain = pricingDomain(String(useDesc), asNumber(useCode));
     if (domain !== category) return false;
     const priceField = key === "Land_Cover2016" ? FIELDS.landPrice2016 : FIELDS.landPrice2026;
-    return asNumber(props[priceField]) > 0;
+    const actualPriceField = key === "Land_Cover2016" ? "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2016" : "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2026";
+    return asNumber(props[priceField] ?? props[actualPriceField]) > 0;
   }, [category]);
 
   return (
