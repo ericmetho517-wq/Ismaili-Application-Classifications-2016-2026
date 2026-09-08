@@ -78,7 +78,9 @@ function PricesPage() {
   const overviewHeight = 560;
   const landUseLegend = useMemo(() => landUseLegendItems(lang), [lang]);
   const mapFilter = useMemo(() => (key: string, props: Record<string, unknown>) => {
-    if (category === "all" || (key !== "Land_Cover2016" && key !== "Land_Cover2026")) return true;
+    if (category === "all") return true;
+    if (["Urban_Changes", "Agricultural_Changes", "Industrial_Changes", "Water_Changes"].includes(key)) return false;
+    if (key !== "Land_Cover2016" && key !== "Land_Cover2026") return true;
     const useDesc = props[FIELDS.useDesc] ?? props["\u0648\u0635\u0641_\u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645"] ?? "";
     const useCode = props[FIELDS.useCode] ?? props["\u0627\u0633\u062a\u062e\u062f\u0627\u0645_\u0627\u0644\u0623\u0631\u0636"];
     const description = String(useDesc);
@@ -111,6 +113,7 @@ function PricesPage() {
           className="dashboard-map-sticky h-full !p-2"
         >
           <MapViewClient
+            key={`prices-2016-${category}`}
             height={`${overviewHeight}px`}
             initialBasemap="satellite"
             satelliteVintage="2016"
@@ -139,6 +142,7 @@ function PricesPage() {
           className="dashboard-map-sticky h-full !p-2"
         >
           <MapViewClient
+            key={`prices-2026-${category}`}
             height={`${overviewHeight}px`}
             initialBasemap="satellite"
             syncGroup="prices-maps"
