@@ -94,6 +94,8 @@ function PricesPage() {
         >
           <MapViewClient
             height={`${overviewHeight}px`}
+            initialBasemap="satellite"
+            satelliteVintage="2016"
             syncGroup="prices-maps"
             transportVariant="roads"
             showLegend
@@ -120,6 +122,7 @@ function PricesPage() {
         >
           <MapViewClient
             height={`${overviewHeight}px`}
+            initialBasemap="satellite"
             syncGroup="prices-maps"
             transportVariant="all"
             showLegend
