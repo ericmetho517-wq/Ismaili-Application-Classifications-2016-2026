@@ -3,14 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Building2, Factory, Sprout } from "lucide-react";
 import { loadPricingData } from "@/lib/data";
-import { asNumber, cleanText, FIELDS } from "@/lib/analytics";
-import { pricingDomain, summarizeUnitPrices, unitPriceRows, type PricingDomain, type UnitPriceStats } from "@/lib/pricing";
+import { pricingDomain, unitPriceRows, summarizeUnitPrices, type PricingDomain, type UnitPriceStats } from "@/lib/pricing";
 import { formatNum, useI18n } from "@/lib/i18n";
 import { TopBar } from "@/components/TopBar";
 import { Panel } from "@/components/Panel";
 import { MapViewClient } from "@/components/MapViewClient";
-import { priceLegendItems } from "@/components/MapView";
-import { PriceGrowthChart, type PriceGroup } from "@/components/PriceCharts";
+import { landUseLegendItems } from "@/components/MapView";
 
 export const Route = createFileRoute("/prices")({
   head: () => ({
@@ -35,146 +33,117 @@ const categoryCards = [
   { key: "industrial" as const, ar: "الأراضي الصناعية", en: "Industrial land", color: "#a855f7", Icon: Factory },
 ];
 
-function compactMoney(value: number, lang: "ar" | "en") {
-  if (Math.abs(value) >= 1_000_000_000_000) return `${formatNum(value / 1_000_000_000_000, lang, 2)} ${lang === "ar" ? "تريليون" : "tn"}`;
-  if (Math.abs(value) >= 1_000_000_000) return `${formatNum(value / 1_000_000_000, lang, 2)} ${lang === "ar" ? "مليار" : "bn"}`;
-  if (Math.abs(value) >= 1_000_000) return `${formatNum(value / 1_000_000, lang, 2)} ${lang === "ar" ? "مليون" : "m"}`;
-  return formatNum(value, lang, 0);
+// Authoritative totals from الاسماعيلية (1).xlsx; non-priced uses stay map-only.
+const workbookTotals: Record<"urban" | "agri" | "industrial", [number, number]> = {
+  agri: [94777205283.4583, 456644273464.868],
+  urban: [316606478701.806, 5683827610371.09],
+  industrial: [35600984498.3984, 760199655768.47],
+};
+
+function money(value: number, lang: "ar" | "en") {
+  const absolute = Math.abs(value);
+  if (absolute >= 1_000_000_000_000) return `${formatNum(value / 1_000_000_000_000, lang, 2)} ${lang === "ar" ? "تريليون" : "tn"}`;
+  if (absolute >= 1_000_000_000) return `${formatNum(value / 1_000_000_000, lang, 2)} ${lang === "ar" ? "مليار" : "bn"}`;
+  if (absolute >= 1_000_000) return `${formatNum(value / 1_000_000, lang, 2)} ${lang === "ar" ? "مليون" : "m"}`;
+  return `${formatNum(value, lang, 0)} ${lang === "ar" ? "جنيه" : "EGP"}`;
 }
 
-function CategoryOverviewCard({ item, stats, lang, active, onClick }: {
-  item: (typeof categoryCards)[number];
-  stats: UnitPriceStats;
-  lang: "ar" | "en";
-  active: boolean;
-  onClick: () => void;
-}) {
+function CategoryValueCard({ item, stats, lang }: { item: (typeof categoryCards)[number]; stats: UnitPriceStats; lang: "ar" | "en" }) {
   const { Icon } = item;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`relative flex min-h-[310px] min-w-0 flex-col items-center justify-center bg-card px-5 py-7 text-center transition-colors hover:bg-muted/35 sm:px-7 sm:py-8 ${active ? "z-10 ring-2 ring-inset" : ""}`}
-      style={{ "--tw-ring-color": item.color } as React.CSSProperties}
-    >
-      <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: item.color }} />
-      <div className="flex w-full flex-col items-center justify-center">
-        <span className="mb-3 grid h-12 w-12 place-items-center rounded-xl" style={{ color: item.color, backgroundColor: `${item.color}1f` }}><Icon className="h-7 w-7" /></span>
-        <h3 className="text-xl font-black leading-snug text-foreground sm:text-2xl">{lang === "ar" ? item.ar : item.en}</h3>
-      </div>
-      <div className="mt-7 grid w-full grid-cols-2 place-items-center gap-x-6 gap-y-7">
-        <div className="min-w-0 text-center"><p className="text-sm font-bold text-muted-foreground sm:text-base">{lang === "ar" ? "سعر المتر 2026" : "2026 price / m²"}</p><strong className="mt-2 block text-3xl font-black leading-none tabular-nums sm:text-4xl" style={{ color: item.color }}>{formatNum(stats.averageRate2026, lang, 0)}</strong></div>
-        <div className="min-w-0 text-center"><p className="text-sm font-bold text-muted-foreground sm:text-base">{lang === "ar" ? "سعر المتر 2016" : "2016 price / m²"}</p><strong className="mt-2 block text-3xl font-black leading-none text-foreground tabular-nums sm:text-4xl">{formatNum(stats.averageRate2016, lang, 0)}</strong></div>
-        <div className="min-w-0 text-center"><p className="text-sm font-bold text-muted-foreground sm:text-base">{lang === "ar" ? "إجمالي قيمة 2026" : "Total value 2026"}</p><strong className="mt-2 block break-words text-xl font-black leading-snug text-foreground tabular-nums sm:text-2xl">{compactMoney(stats.total2026, lang)} <small className="text-sm font-extrabold sm:text-base">{lang === "ar" ? "جنيه" : "EGP"}</small></strong></div>
-        <div className="min-w-0 text-center"><p className="text-sm font-bold text-muted-foreground sm:text-base">{lang === "ar" ? "نسبة الزيادة" : "Growth"}</p><strong className="mt-2 block text-2xl font-black leading-none tabular-nums sm:text-3xl" style={{ color: item.color }}>{stats.growth >= 0 ? "+" : ""}{formatNum(stats.growth, lang, 1)}%</strong></div>
-      </div>
-    </button>
-  );
+  const difference = stats.total2026 - stats.total2016;
+  return <article className="relative flex min-h-[160px] flex-col items-center justify-center bg-black px-2.5 py-3 text-center text-white">
+    <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: item.color }} />
+    <span className="mb-1 grid h-7 w-7 place-items-center rounded-md" style={{ color: item.color, backgroundColor: `${item.color}1f` }}><Icon className="h-3.5 w-3.5" /></span>
+    <h3 className="text-sm font-black text-white sm:text-base">{lang === "ar" ? item.ar : item.en}</h3>
+    <div className="mt-2.5 grid w-full grid-cols-2 gap-x-2 gap-y-2">
+      <div className="border-e border-white/15 pe-3"><p className="text-sm font-extrabold text-white/80 sm:text-base">{lang === "ar" ? "إجمالي 2016" : "Total 2016"}</p><strong className="mt-2 block text-xl font-black leading-tight text-white sm:text-2xl">{money(stats.total2016, lang)}</strong></div>
+      <div className="ps-3"><p className="text-sm font-extrabold text-white/80 sm:text-base">{lang === "ar" ? "إجمالي 2026" : "Total 2026"}</p><strong className="mt-2 block text-xl font-black leading-tight sm:text-2xl" style={{ color: item.color }}>{money(stats.total2026, lang)}</strong></div>
+      <div className="col-span-2 border-t border-white/15 pt-3"><p className="text-sm font-extrabold text-white/80 sm:text-base">{lang === "ar" ? "الفرق بين السنتين" : "Difference between years"}</p><strong className="mt-1 block text-2xl font-black leading-tight text-emerald-400 sm:text-3xl">{difference >= 0 ? "+" : ""}{money(difference, lang)}</strong></div>
+    </div>
+  </article>;
 }
 
 function PricesPage() {
   const { t, lang } = useI18n();
-  const [category, setCategory] = useState<CategoryFilter>("all");
-  const [mapMode, setMapMode] = useState<"price2016" | "price2026" | "priceGrowth">("price2026");
+  const category: CategoryFilter = "all";
   const { data } = useQuery({ queryKey: ["pricing"], queryFn: loadPricingData });
 
   const rows = useMemo(() => unitPriceRows(data?.rows), [data]);
-  const categoryRows = useMemo(
-    () => category === "all" ? rows : rows.filter((row) => pricingDomain(row.use, row.landUseCode) === category),
-    [category, rows],
-  );
+  const categoryStats = useMemo(() => Object.fromEntries(categoryCards.map((item) => {
+    const [total2016, total2026] = workbookTotals[item.key];
+    const base = summarizeUnitPrices(rows.filter((row) => pricingDomain(row.use, row.landUseCode) === item.key));
+    return [item.key, { ...base, total2016, total2026 }];
+  })) as Record<PricingDomain, UnitPriceStats>, [rows]);
   const overviewHeight = 560;
-  const priceLegend = useMemo(() => priceLegendItems(mapMode, lang), [mapMode, lang]);
-  const categoryStats = useMemo(
-    () => Object.fromEntries(categoryCards.map((item) => [item.key, summarizeUnitPrices(rows.filter((row) => pricingDomain(row.use, row.landUseCode) === item.key))])) as Record<PricingDomain, UnitPriceStats>,
-    [rows],
-  );
-  const growthGroups = useMemo<PriceGroup[]>(
-    () => categoryCards.map((item) => ({
-      name: lang === "ar" ? item.ar : item.en,
-      count: categoryStats[item.key].count,
-      rate2016: Math.round(categoryStats[item.key].averageRate2016),
-      rate2026: Math.round(categoryStats[item.key].averageRate2026),
-      growth: +categoryStats[item.key].growth.toFixed(1),
-      color: item.color,
-    })),
-    [categoryStats, lang],
-  );
-  const mapFilter = useMemo(
-    () => (key: string, props: Record<string, unknown>) => {
-      if (key !== "Land_Cover2026") return true;
-      const use = cleanText(props[FIELDS.useDesc]);
-      const hasPrice = asNumber(props[FIELDS.landPrice2016]) > 0 && asNumber(props[FIELDS.landPrice2026]) > 0;
-      const matchesCategory = category === "all" || pricingDomain(use, asNumber(props[FIELDS.useCode])) === category;
-      return hasPrice && matchesCategory;
-    },
-    [category],
-  );
-
-  const changeCategory = (next: CategoryFilter) => {
-    setCategory(next);
-  };
+  const landUseLegend = useMemo(() => landUseLegendItems(lang), [lang]);
+  const mapFilter = useMemo(() => () => true, []);
 
   return (
     <div className="shrink-0">
       <TopBar title={lang === "ar" ? "أسعار الأراضي" : "Land Prices"} subtitle={lang === "ar" ? " " : "Choose a classification and view unit prices on the map"} />
 
       <section className="mb-2 overflow-hidden rounded-xl border border-border bg-border">
-        <div className="grid gap-px md:grid-cols-2 xl:grid-cols-3">
-          {categoryCards.map((item) => (
-            <CategoryOverviewCard
-              key={item.key}
-              item={item}
-              stats={categoryStats[item.key]}
-              lang={lang}
-              active={category === item.key}
-              onClick={() => changeCategory(category === item.key ? "all" : item.key)}
-            />
-          ))}
-        </div>
+        <div className="grid gap-px md:grid-cols-3">{categoryCards.map((item) => <CategoryValueCard key={item.key} item={item} stats={categoryStats[item.key]} lang={lang} />)}</div>
       </section>
 
-      <div>
+      <div className="grid gap-2 md:grid-cols-2">
         <Panel
-          title={lang === "ar" ? "خريطة سعر المتر" : "Unit-price map"}
-          right={<div className="flex gap-1">{(["price2016", "price2026", "priceGrowth"] as const).map((mode) => (
-            <button key={mode} type="button" onClick={() => setMapMode(mode)} className={`rounded border px-2 py-1 text-[10px] ${mapMode === mode ? "border-[var(--brand)] bg-[var(--brand)]/15 font-bold text-foreground" : "border-border text-muted-foreground"}`}>
-              {mode === "price2016" ? "2016" : mode === "price2026" ? "2026" : lang === "ar" ? "الزيادة" : "Growth"}
-            </button>
-          ))}</div>}
+          title={lang === "ar" ? "خريطة استخدامات الأراضي — 2016" : "Land-use map — 2016"}
+          right={null}
           className="dashboard-map-sticky h-full !p-2"
         >
           <MapViewClient
             height={`${overviewHeight}px`}
+            syncGroup="prices-maps"
+            transportVariant="roads"
             showLegend
             defaultLegendOpen
             defaultLayerControlOpen={false}
-            legendType="gradient"
-            legendTitle={mapMode === "priceGrowth" ? (lang === "ar" ? "نسبة الزيادة" : "Growth") : (lang === "ar" ? "سعر المتر" : "Unit price")}
-            legendHint={lang === "ar" ? "أربع فئات لقراءة الخريطة بسرعة" : "Four classes for quick map reading"}
-            legendItems={priceLegend}
+            legendType="list"
+            legendTitle={lang === "ar" ? "استخدامات الأراضي" : "Land use"}
+            legendHint={lang === "ar" ? "السيمبولوجي الموحد للخريطة" : "Unified map symbology"}
+            legendItems={landUseLegend}
             layers={[
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#073b88", fillColor: "#ffe7a3", weight: 3, dashArray: "8 6", fillOpacity: 0.16 },
               { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: "#e31a1c", weight: 3 },
-              { key: "Land_Cover2026", label: lang === "ar" ? "أسعار الأراضي" : "Land prices", type: "polygon", styleBy: mapMode, weight: 0.35, fillOpacity: 0.56, smoothFactor: 0.15, interactive: true },
+              { key: "Land_Cover2016", label: lang === "ar" ? "استخدامات الأراضي 2016" : "Land use 2016", type: "polygon", styleBy: "use", weight: 0.35, fillOpacity: 0.78, smoothFactor: 0.15, interactive: true },
             ]}
-            initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026"]}
+            initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2016"]}
             filterFn={mapFilter}
-            styleChangeKey={`${mapMode}-${category}`}
+            styleChangeKey={category}
+          />
+        </Panel>
+        <Panel
+          title={lang === "ar" ? "خريطة استخدامات الأراضي — 2026" : "Land-use map — 2026"}
+          right={null}
+          className="dashboard-map-sticky h-full !p-2"
+        >
+          <MapViewClient
+            height={`${overviewHeight}px`}
+            syncGroup="prices-maps"
+            transportVariant="all"
+            showLegend
+            defaultLegendOpen
+            defaultLayerControlOpen={false}
+            legendType="list"
+            legendTitle={lang === "ar" ? "استخدامات الأراضي" : "Land use"}
+            legendHint={lang === "ar" ? "السيمبولوجي الموحد للخريطة" : "Unified map symbology"}
+            legendItems={landUseLegend}
+            layers={[
+              { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#073b88", fillColor: "#ffe7a3", weight: 3, dashArray: "8 6", fillOpacity: 0.16 },
+              { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: "#e31a1c", weight: 3 },
+              { key: "Land_Cover2026", label: lang === "ar" ? "استخدامات الأراضي 2026" : "Land use 2026", type: "polygon", styleBy: "use", weight: 0.35, fillOpacity: 0.78, smoothFactor: 0.15, interactive: true },
+              { key: "Urban_Changes", label: lang === "ar" ? "تغيرات العمران" : "Urban changes", type: "polygon", fixedColor: "#ff4d4f", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
+              { key: "Agricultural_Changes", label: lang === "ar" ? "تغيرات الزراعة" : "Agricultural changes", type: "polygon", fixedColor: "#22c55e", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
+              { key: "Industrial_Changes", label: lang === "ar" ? "تغيرات الصناعة" : "Industrial changes", type: "polygon", fixedColor: "#a855f7", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
+            ]}
+            initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026", "Urban_Changes", "Agricultural_Changes", "Industrial_Changes"]}
+            filterFn={mapFilter}
+            styleChangeKey={category}
           />
         </Panel>
       </div>
 
-      <div className="mt-2">
-        <Panel title={lang === "ar" ? "نمو سعر المتر حسب نوع الأرض" : "Unit-price growth by land type"}>
-          <p className="mb-2 text-center text-sm font-bold text-muted-foreground sm:text-base">
-            {lang === "ar"
-              ? "نسبة زيادة متوسط سعر المتر من 2016 إلى 2026 — العمود الأعلى يعني زيادة أكبر."
-              : "Average unit-price increase from 2016 to 2026 — a taller bar means higher growth."}
-          </p>
-          <PriceGrowthChart data={growthGroups} height={360} />
-        </Panel>
-      </div>
     </div>
   );
 }

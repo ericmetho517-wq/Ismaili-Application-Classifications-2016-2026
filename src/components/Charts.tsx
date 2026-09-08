@@ -1251,3 +1251,26 @@ export function DonutKPI({
     </div>
   );
 }
+
+/** Two-year sector share comparison against the study-area total. */
+export function ShareComparison({ value2016, value2026, total, color = "#22d3ee" }: { value2016: number; value2026: number; total: number; color?: string }) {
+  const { lang } = useI18n();
+  const pct2016 = total > 0 ? (value2016 / total) * 100 : 0;
+  const pct2026 = total > 0 ? (value2026 / total) * 100 : 0;
+  const delta = pct2026 - pct2016;
+  const growth = value2016 > 0 ? ((value2026 - value2016) / value2016) * 100 : 0;
+  return <div className="flex h-[240px] flex-col justify-center gap-4 px-4 text-white sm:px-7">
+    {[{ year: "2016", pct: pct2016 }, { year: "2026", pct: pct2026 }].map((item) => <div key={item.year} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+      <div className="mb-2 flex items-center justify-between gap-3"><span className="text-sm font-extrabold text-white/90 sm:text-base">{lang === "ar" ? `نسبة القطاع من إجمالي مساحة الدراسة — ${item.year}` : `${item.year} share of total study area`}</span><strong className="rounded-lg px-2.5 py-1 text-base font-black text-black sm:text-lg" style={{ backgroundColor: color }}>{formatNum(item.pct, lang, 2)}%</strong></div>
+      <div className="h-3 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full shadow-[0_0_14px_currentColor] transition-all" style={{ width: `${Math.min(100, Math.max(0, item.pct))}%`, backgroundColor: color, color }} /></div>
+    </div>)}
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className={`rounded-xl border px-3 py-2.5 text-center text-sm font-black sm:text-base ${delta >= 0 ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300" : "border-red-400/30 bg-red-400/10 text-red-300"}`}>
+        {lang === "ar" ? "تغير حصة القطاع" : "Sector share change"}<br /><span dir="ltr">{delta >= 0 ? "+" : ""}{formatNum(delta, lang, 2)}%</span>
+      </div>
+      <div className={`rounded-xl border px-3 py-2.5 text-center text-sm font-black sm:text-base ${growth >= 0 ? "border-sky-400/30 bg-sky-400/10 text-sky-300" : "border-red-400/30 bg-red-400/10 text-red-300"}`}>
+        {lang === "ar" ? "معدل نمو مساحة القطاع" : "Sector area growth"}<br /><span dir="ltr">{growth >= 0 ? "+" : ""}{formatNum(growth, lang, 1)}%</span>
+      </div>
+    </div>
+  </div>;
+}

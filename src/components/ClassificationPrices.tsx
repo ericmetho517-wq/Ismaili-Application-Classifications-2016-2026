@@ -62,8 +62,7 @@ export function ClassificationPrices({
     [data, domain],
   );
   const stats = useMemo(() => summarizeGroups(domainGroups), [domainGroups]);
-  const averageParcelValue2016 = stats.count > 0 ? stats.total2016 / stats.count : 0;
-  const averageParcelValue2026 = stats.count > 0 ? stats.total2026 / stats.count : 0;
+  const difference = stats.total2026 - stats.total2016;
   const metrics: Metric[] = [
     {
       label: lang === "ar" ? "إجمالي قيمة 2016" : "Total value 2016",
@@ -78,28 +77,9 @@ export function ClassificationPrices({
       tone: domainTone[domain],
     },
     {
-      label: lang === "ar" ? "متوسط القيمة الإجمالية 2016" : "Average total value 2016",
-      value: compactMoney(averageParcelValue2016, lang),
-      unit: lang === "ar" ? "جنيه" : "EGP",
-      tone: "brand",
-    },
-    {
-      label: lang === "ar" ? "متوسط القيمة الإجمالية 2026" : "Average total value 2026",
-      value: compactMoney(averageParcelValue2026, lang),
-      unit: lang === "ar" ? "جنيه" : "EGP",
-      tone: domainTone[domain],
-    },
-    {
-      label: lang === "ar" ? "متوسط سعر المتر 2016" : "Average price / m² 2016",
-      value: stats.averageRate2016,
-      unit: lang === "ar" ? "جنيه/م²" : "EGP/m²",
-      tone: "brand",
-    },
-    {
-      label: lang === "ar" ? "متوسط سعر المتر 2026" : "Average price / m² 2026",
-      value: stats.averageRate2026,
-      unit: lang === "ar" ? "جنيه/م²" : "EGP/m²",
-      tone: domainTone[domain],
+      label: lang === "ar" ? "الفرق بين 2016 و2026" : "Difference 2016–2026",
+      value: `${difference >= 0 ? "+" : ""}${compactMoney(difference, lang)}`,
+      tone: "accent",
     },
   ];
 

@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { TopBar } from "@/components/TopBar";
 import { Panel } from "@/components/Panel";
 import { MapViewClient } from "@/components/MapViewClient";
-import { DonutKPI, RadialGauge } from "@/components/Charts";
+import { ShareComparison, RadialGauge } from "@/components/Charts";
 import { ClassificationPrices } from "@/components/ClassificationPrices";
 import { MAP_COLORS } from "@/lib/colors";
 
@@ -57,19 +57,20 @@ function IndustrialPage() {
 
       <div className="mt-2 grid gap-2 lg:grid-cols-2">
         <Panel title={t.charts.landShareDonut}>
-          {s && <DonutKPI value={ind2026} total={s.totals.study_area_km2} label={`${t.stats.industrialArea} / ${t.stats.studyArea}`} color={MAP_COLORS.industrial} />}
+          {s && <ShareComparison value2016={ind2016} value2026={ind2026} total={s.totals.study_area_km2} color={MAP_COLORS.industrial} />}
         </Panel>
         <Panel title={t.common.growth}>
           <RadialGauge value={Math.min(200, Math.max(0, growthPct))} label={t.common.growth} color={MAP_COLORS.industrial} max={Math.max(100, growthPct + 10)} />
         </Panel>
       </div>
 
-
       <div className="mt-2">
         <Panel title={lang === "ar" ? "أسعار الأراضي الصناعية" : "Industrial prices"}>
           <ClassificationPrices domain="industrial" />
         </Panel>
       </div>
+
+
     </>
   );
 }

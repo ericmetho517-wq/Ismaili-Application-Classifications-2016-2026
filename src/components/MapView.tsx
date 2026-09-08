@@ -29,6 +29,7 @@ type LayerSpec = {
   smoothFactor?: number;
   outlineOnly?: boolean;
   interactive?: boolean;
+  highlightCircles?: boolean;
 };
 
 type Basemap = "blue" | "streets" | "satellite" | "dark";
@@ -64,6 +65,7 @@ export type MapViewProps = {
   showLayerControl?: boolean;
   showLegend?: boolean;
   showTransit?: boolean;
+  transportVariant?: "roads" | "all";
   defaultLayerControlOpen?: boolean;
   defaultLegendOpen?: boolean;
   legendItems?: Array<{ color: string; label: string }>;
@@ -131,6 +133,13 @@ export function agriculturalLegendItems(lang: "ar" | "en") {
   ];
 }
 
+export function landUseLegendItems(lang: "ar" | "en") {
+  const labels = lang === "ar"
+    ? ["الأراضي الزراعية", "الأراضي العمرانية", "الأراضي الصناعية", "الأراضي الفضاء", "المناطق الخدمية", "المياه", "الطرق"]
+    : ["Agricultural land", "Urban land", "Industrial land", "Vacant land", "Services", "Water", "Roads"];
+  return [MAP_COLORS.agricultural, MAP_COLORS.urban, MAP_COLORS.industrial, MAP_COLORS.vacant, MAP_COLORS.services, MAP_COLORS.water, "#171717"].map((color, index) => ({ color, label: labels[index] }));
+}
+
 function unitLandPrice(props: Record<string, any>, year: 2016 | 2026) {
   const total = Number(props[year === 2016 ? PRICE_2016_FIELD : PRICE_2026_FIELD] ?? 0);
   const area = Number(props.SHAPE_Area ?? props.Shape_Area ?? 0);
@@ -140,10 +149,16 @@ function unitLandPrice(props: Record<string, any>, year: 2016 | 2026) {
 function classificationColor(props: Record<string, any>) {
   const code = String(props["استخدام_الأرض"] ?? "").trim();
   if (code === "3") return MAP_COLORS.urban;
-  if (code === "0") return MAP_COLORS.agricultural;
+  if (code === "2") return "#fff7b2";
+  if (code === "4") return "#ff2020";
   if (code === "1") return MAP_COLORS.industrial;
-  if (code === "2") return MAP_COLORS.vacant;
-  if (code) return MAP_COLORS.services;
+  if (code === "6") return "#b8d989";
+  if (code === "7") return "#777777";
+  if (code === "8") return MAP_COLORS.water;
+  if (code === "12") return "#2f66b3";
+  if (code === "14") return "#00cbb5";
+  if (!code) return MAP_COLORS.agricultural;
+  if (code === "5" || code === "11") return MAP_COLORS.services;
   return colorFor(props["وصف_الاستخدام"]);
 }
 
@@ -693,15 +708,16 @@ export function MapView(props: MapViewProps) {
     if (props.showTransit === false) return;
     setActive((prev) => {
       const next = new Set(prev);
-      TRANSPORT_LAYER_KEYS.forEach((key) => next.add(key));
+      const transportKeys = props.transportVariant === "roads" ? ROAD_LAYER_KEYS.slice(0, 1) : TRANSPORT_LAYER_KEYS;
+      transportKeys.forEach((key) => next.add(key));
       return next;
     });
-  }, [props.showTransit]);
+  }, [props.showTransit, props.transportVariant]);
 
   const filterFn = props.filterFn;
   const layers = useMemo(() => {
     if (props.showTransit === false) return props.layers;
-    const transportLines = [...ROAD_LINES, ...TRANSIT_LINES];
+    const transportLines = props.transportVariant === "roads" ? ROAD_LINES.slice(0, 1) : [...ROAD_LINES, ...TRANSIT_LINES];
     const extra: LayerSpec[] = transportLines.map((line) => ({
       ...line,
       label: lang === "ar" ? line.labelAr : line.labelEn,
@@ -709,7 +725,7 @@ export function MapView(props: MapViewProps) {
       interactive: false,
     }));
     return [...props.layers, ...extra];
-  }, [props.layers, props.showTransit, lang]);
+  }, [props.layers, props.showTransit, props.transportVariant, lang]);
 
   // Load/toggle layers
   useEffect(() => {
@@ -959,6 +975,14 @@ export function MapView(props: MapViewProps) {
 
           if (!cancelled && active.has(spec.key)) {
             layer.addTo(map);
+            if (spec.highlightCircles && features.length) {
+              const ranked = [...features].sort((a: any, b: any) => Number(b.properties?.SHAPE_Area ?? b.properties?.Shape_Area ?? 0) - Number(a.properties?.SHAPE_Area ?? a.properties?.Shape_Area ?? 0)).slice(0, 3);
+              ranked.forEach((feature: any) => {
+                const part = L.geoJSON(feature);
+                const center = part.getBounds().getCenter();
+                L.circle(center, { pane: "map-features", radius: 1800, color: spec.fixedColor ?? "#2563eb", weight: 2, fill: false, opacity: 0.9, interactive: false }).addTo(layer);
+              });
+            }
             layerRefs.current[spec.key] = layer;
             hitTargetsRef.current[spec.key] = hitTargets;
 

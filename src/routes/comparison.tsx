@@ -66,7 +66,7 @@ function ComparePage() {
         </div>
       )}
 
-      <div className="grid gap-2 lg:grid-cols-2">
+      <div className="grid gap-2 md:grid-cols-2">
         <Panel title={`${t.map.title} — ${t.map.year2016}`} className="dashboard-map-sticky !p-2">
           <FilterChip filter={selectedMapFilter} onClear={() => setSelectedMapFilter(null)} />
           <MapViewClient height="clamp(360px, 52dvh, 520px)" initialBasemap="satellite" syncGroup="comparison-maps" showLegend defaultLayerControlOpen={false} defaultLegendOpen={false} legendItems={useLegend} layers={[
@@ -84,6 +84,9 @@ function ComparePage() {
           ]} initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026"]} showTransit filterFn={applyMapFilter(selectedMapFilter)} />
         </Panel>
       </div>
+      <p className="mt-1 text-center text-xs font-semibold text-muted-foreground">
+        {t.map.year2016} و{t.map.year2026} معروضان من طبقتين منفصلتين؛ لذلك تظل العناصر الموجودة في سنة واحدة فقط ظاهرة في خريطتها دون اختفائها أو دمجها مع السنة الأخرى.
+      </p>
 
       {/* % share comparison */}
       <div className="mt-2">

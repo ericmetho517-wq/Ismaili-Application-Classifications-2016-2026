@@ -21,7 +21,7 @@ export function MetricStrip({ metrics, compact = false }: { metrics: Metric[]; c
   }
 
   return (
-    <div className={`grid gap-3 ${compact ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-2 md:grid-cols-3 xl:grid-cols-6"}`}>
+    <div className={`grid gap-3 ${compact ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2 md:grid-cols-3 xl:grid-cols-6"}`}>
       {metrics.map((metric, index) => {
         const Icon = icons[index % icons.length];
         const display =

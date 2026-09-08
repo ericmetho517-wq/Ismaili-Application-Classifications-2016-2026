@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { TopBar } from "@/components/TopBar";
 import { Panel } from "@/components/Panel";
 import { MapViewClient } from "@/components/MapViewClient";
-import { DonutKPI, RadialGauge } from "@/components/Charts";
+import { ShareComparison, RadialGauge } from "@/components/Charts";
 import { ClassificationPrices } from "@/components/ClassificationPrices";
 import { MAP_COLORS } from "@/lib/colors";
 
@@ -79,14 +79,7 @@ function UrbanPage() {
 
       <div className="mt-2 grid gap-2 lg:grid-cols-2">
         <Panel title={t.charts.landShareDonut}>
-          {s && (
-            <DonutKPI
-              value={u2026}
-              total={s.totals.study_area_km2}
-              label={`${t.stats.urbanArea} / ${t.stats.studyArea}`}
-              color={MAP_COLORS.urban}
-            />
-          )}
+          {s && <ShareComparison value2016={u2016} value2026={u2026} total={s.totals.study_area_km2} color={MAP_COLORS.urban} />}
         </Panel>
         <Panel title={t.common.growth}>
           <RadialGauge
@@ -103,6 +96,7 @@ function UrbanPage() {
           <ClassificationPrices domain="urban" />
         </Panel>
       </div>
+
     </>
   );
 }
