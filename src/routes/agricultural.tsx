@@ -50,7 +50,7 @@ function AgriPage() {
             layers={[
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: MAP_COLORS.studyArea },
               { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: MAP_COLORS.axisRoad, weight: 4 },
-              { key: "Agricultural_Changes", label: t.layers.agri, type: "polygon", styleBy: "agriculture", weight: 0.8, fillOpacity: 0.48 },
+              { key: "Agricultural_Changes", label: t.layers.agri, type: "polygon", styleBy: "agriculture", weight: 0.8, fillOpacity: 0.48, highlightCircles: true },
             ]}
             initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Agricultural_Changes"]}
             showTransit

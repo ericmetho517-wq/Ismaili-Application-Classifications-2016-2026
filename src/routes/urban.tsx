@@ -69,6 +69,7 @@ function UrbanPage() {
                 label: t.layers.urban,
                 type: "polygon",
                 fixedColor: MAP_COLORS.urban,
+                highlightCircles: true,
               },
             ]}
             initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Urban_Changes"]}
