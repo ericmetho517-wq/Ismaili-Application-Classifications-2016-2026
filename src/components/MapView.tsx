@@ -136,7 +136,10 @@ export function landUseLegendItems(lang: "ar" | "en") {
   const labels = lang === "ar"
     ? ["الأراضي الزراعية", "الأراضي العمرانية", "الأراضي الصناعية", "الأراضي الفضاء", "المناطق الخدمية", "المياه", "الطرق"]
     : ["Agricultural land", "Urban land", "Industrial land", "Vacant land", "Services", "Water", "Roads"];
-  return [MAP_COLORS.agricultural, MAP_COLORS.urban, MAP_COLORS.industrial, MAP_COLORS.vacant, MAP_COLORS.services, MAP_COLORS.water, "#171717"].map((color, index) => ({ color, label: labels[index] }));
+  const officialLabels = lang === "ar"
+    ? ["\u0627\u0644\u0639\u0645\u0631\u0627\u0646", "\u0627\u0644\u0632\u0631\u0627\u0639\u0629", "\u0627\u0644\u0635\u0646\u0627\u0639\u0629", "\u0623\u0631\u0636 \u0641\u0636\u0627\u0621", "\u0623\u0631\u0627\u0636\u064a \u0627\u0644\u0642\u0648\u0627\u062a \u0627\u0644\u0645\u0633\u0644\u062d\u0629", "\u062d\u0631\u0645 \u0627\u0644\u0637\u0631\u064a\u0642", "\u0623\u0631\u0627\u0636\u064a \u0627\u0644\u062e\u062f\u0645\u0627\u062a", "\u0627\u0644\u0645\u0646\u0627\u0637\u0642 \u0627\u0644\u062a\u0631\u0641\u064a\u0647\u064a\u0629", "\u0645\u0633\u0637\u062d\u0627\u062a \u0645\u0627\u0626\u064a\u0629", "\u0627\u0644\u0645\u0642\u0627\u0628\u0631", "\u062f\u064a\u0646\u064a", "\u0627\u0644\u0623\u0631\u0627\u0636\u064a \u0627\u0644\u062a\u0639\u0644\u064a\u0645\u064a\u0629", "\u0627\u0644\u0623\u0631\u0627\u0636\u064a \u0627\u0644\u062d\u0643\u0648\u0645\u064a\u0629", "\u0627\u0644\u0623\u0631\u0627\u0636\u064a \u0627\u0644\u0633\u064a\u0627\u062d\u064a\u0629", "\u0645\u0633\u0627\u062d\u0627\u062a \u062e\u0636\u0631\u0627\u0621"]
+    : ["Urban", "Agriculture", "Industrial", "Vacant land", "Military land", "Road reserve", "Services", "Recreation", "Water bodies", "Cemeteries", "Religious", "Educational", "Government", "Tourism", "Green spaces"];
+  return ["#f59e0b", "#16a34a", "#8b00b8", "#fffbd1", "#ff1616", "#555555", "#14b8a6", "#b8c6b2", "#08aee5", "#8a8a8a", "#d9dde2", "#315d9b", "#a66c00", "#0bd1c0", "#70cf50"].map((color, index) => ({ color, label: officialLabels[index] }));
 }
 
 function unitLandPrice(props: Record<string, any>, year: 2016 | 2026) {
