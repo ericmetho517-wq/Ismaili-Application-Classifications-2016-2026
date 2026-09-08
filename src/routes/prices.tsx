@@ -81,7 +81,15 @@ function PricesPage() {
     if (category === "all" || (key !== "Land_Cover2016" && key !== "Land_Cover2026")) return true;
     const useDesc = props[FIELDS.useDesc] ?? props["\u0648\u0635\u0641_\u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645"] ?? "";
     const useCode = props[FIELDS.useCode] ?? props["\u0627\u0633\u062a\u062e\u062f\u0627\u0645_\u0627\u0644\u0623\u0631\u0636"];
-    const domain = pricingDomain(String(useDesc), asNumber(useCode));
+    const description = String(useDesc);
+    const code = asNumber(useCode);
+    const domain: PricingDomain | "other" = code === 3
+      ? "urban"
+      : code === 1
+        ? "industrial"
+        : /زراعي|مزارع|صوب|محاصيل|حيواني/.test(description)
+          ? "agri"
+          : pricingDomain(description, code);
     if (domain !== category) return false;
     const priceField = key === "Land_Cover2016" ? FIELDS.landPrice2016 : FIELDS.landPrice2026;
     const actualPriceField = key === "Land_Cover2016" ? "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2016" : "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2026";
