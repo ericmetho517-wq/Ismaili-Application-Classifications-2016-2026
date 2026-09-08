@@ -52,14 +52,14 @@ function money(value: number, lang: "ar" | "en") {
 function CategoryValueCard({ item, stats, lang, active, onClick }: { item: (typeof categoryCards)[number]; stats: UnitPriceStats; lang: "ar" | "en"; active: boolean; onClick: () => void }) {
   const { Icon } = item;
   const difference = stats.total2026 - stats.total2016;
-  return <button type="button" onClick={onClick} aria-pressed={active} className={`relative flex min-h-[132px] w-full flex-col items-center justify-center bg-black px-2 py-2 text-center text-white transition ${active ? "ring-2 ring-inset" : "hover:bg-white/5"}`} style={{ "--tw-ring-color": item.color } as React.CSSProperties}>
+  return <button type="button" onClick={onClick} aria-pressed={active} className={`relative flex min-h-[132px] w-full flex-col items-center justify-center bg-white px-2 py-2 text-center text-foreground transition dark:bg-black dark:text-white ${active ? "ring-2 ring-inset" : "hover:bg-muted/30 dark:hover:bg-white/5"}`} style={{ "--tw-ring-color": item.color } as React.CSSProperties}>
     <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: item.color }} />
     <span className="mb-0.5 grid h-6 w-6 place-items-center rounded-md" style={{ color: item.color, backgroundColor: `${item.color}1f` }}><Icon className="h-3 w-3" /></span>
-    <h3 className="text-xs font-black text-white sm:text-sm">{lang === "ar" ? item.ar : item.en}</h3>
+    <h3 className="text-xs font-black text-foreground dark:text-white sm:text-sm">{lang === "ar" ? item.ar : item.en}</h3>
     <div className="mt-1.5 grid w-full grid-cols-2 gap-x-2 gap-y-1">
-      <div className="border-e border-white/15 pe-2"><p className="text-xs font-extrabold text-white/80 sm:text-sm">{lang === "ar" ? "إجمالي 2016" : "Total 2016"}</p><strong className="mt-1 block text-lg font-black leading-tight text-white sm:text-xl">{money(stats.total2016, lang)}</strong></div>
-      <div className="ps-2"><p className="text-xs font-extrabold text-white/80 sm:text-sm">{lang === "ar" ? "إجمالي 2026" : "Total 2026"}</p><strong className="mt-1 block text-lg font-black leading-tight sm:text-xl" style={{ color: item.color }}>{money(stats.total2026, lang)}</strong></div>
-      <div className="col-span-2 border-t border-white/15 pt-2"><p className="text-xs font-extrabold text-white/80 sm:text-sm">{lang === "ar" ? "الفرق بين السنتين" : "Difference between years"}</p><strong className="mt-0.5 block text-xl font-black leading-tight text-emerald-400 sm:text-2xl">{difference >= 0 ? "+" : ""}{money(difference, lang)}</strong></div>
+      <div className="border-e border-border pe-2"><p className="text-xs font-extrabold text-muted-foreground sm:text-sm">{lang === "ar" ? "إجمالي 2016" : "Total 2016"}</p><strong className="mt-1 block text-lg font-black leading-tight text-foreground dark:text-white sm:text-xl">{money(stats.total2016, lang)}</strong></div>
+      <div className="ps-2"><p className="text-xs font-extrabold text-muted-foreground sm:text-sm">{lang === "ar" ? "إجمالي 2026" : "Total 2026"}</p><strong className="mt-1 block text-lg font-black leading-tight sm:text-xl" style={{ color: item.color }}>{money(stats.total2026, lang)}</strong></div>
+      <div className="col-span-2 border-t border-border pt-2"><p className="text-xs font-extrabold text-muted-foreground sm:text-sm">{lang === "ar" ? "الفرق بين السنتين" : "Difference between years"}</p><strong className="mt-0.5 block text-xl font-black leading-tight text-emerald-400 sm:text-2xl">{difference >= 0 ? "+" : ""}{money(difference, lang)}</strong></div>
     </div>
   </button>;
 }
