@@ -122,11 +122,10 @@ function PricesPage() {
             syncGroup="prices-maps"
             transportVariant="roads"
             showLegend
-            defaultLegendOpen
+            defaultLegendOpen={false}
             defaultLayerControlOpen={false}
             legendType="list"
             legendTitle={lang === "ar" ? "استخدامات الأراضي" : "Land use"}
-            legendHint={lang === "ar" ? "السيمبولوجي الموحد للخريطة" : "Unified map symbology"}
             legendItems={landUseLegend}
             layers={[
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#073b88", fillColor: "#ffe7a3", weight: 3, dashArray: "8 6", fillOpacity: 0.16 },
@@ -150,11 +149,10 @@ function PricesPage() {
             syncGroup="prices-maps"
             transportVariant="all"
             showLegend
-            defaultLegendOpen
+            defaultLegendOpen={false}
             defaultLayerControlOpen={false}
             legendType="list"
             legendTitle={lang === "ar" ? "استخدامات الأراضي" : "Land use"}
-            legendHint={lang === "ar" ? "السيمبولوجي الموحد للخريطة" : "Unified map symbology"}
             legendItems={landUseLegend}
             layers={[
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#073b88", fillColor: "#ffe7a3", weight: 3, dashArray: "8 6", fillOpacity: 0.16 },
