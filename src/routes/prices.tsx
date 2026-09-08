@@ -93,9 +93,9 @@ function PricesPage() {
           ? "agri"
           : pricingDomain(description, code);
     if (domain !== category) return false;
-    const priceField = key === "Land_Cover2016" ? FIELDS.landPrice2016 : FIELDS.landPrice2026;
-    const actualPriceField = key === "Land_Cover2016" ? "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2016" : "\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2026";
-    return asNumber(props[priceField] ?? props[actualPriceField]) > 0;
+    const price2016 = asNumber(props[FIELDS.landPrice2016] ?? props["\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2016"]);
+    const price2026 = asNumber(props[FIELDS.landPrice2026] ?? props["\u0633\u0639\u0631_\u0627\u0644\u0623\u0631\u0636_2026"]);
+    return price2016 > 0 || price2026 > 0;
   }, [category]);
 
   return (
