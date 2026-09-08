@@ -133,9 +133,6 @@ function PricesPage() {
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: "#073b88", fillColor: "#ffe7a3", weight: 3, dashArray: "8 6", fillOpacity: 0.16 },
               { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: "#e31a1c", weight: 3 },
               { key: "Land_Cover2026", label: lang === "ar" ? "استخدامات الأراضي 2026" : "Land use 2026", type: "polygon", styleBy: "use", weight: 0.35, fillOpacity: 0.78, smoothFactor: 0.15, interactive: true },
-              { key: "Urban_Changes", label: lang === "ar" ? "تغيرات العمران" : "Urban changes", type: "polygon", fixedColor: "#ff4d4f", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
-              { key: "Agricultural_Changes", label: lang === "ar" ? "تغيرات الزراعة" : "Agricultural changes", type: "polygon", fixedColor: "#22c55e", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
-              { key: "Industrial_Changes", label: lang === "ar" ? "تغيرات الصناعة" : "Industrial changes", type: "polygon", fixedColor: "#a855f7", weight: 2.2, fillOpacity: 0, outlineOnly: true, highlightCircles: true },
             ]}
             initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Land_Cover2026", "Urban_Changes", "Agricultural_Changes", "Industrial_Changes"]}
             filterFn={mapFilter}

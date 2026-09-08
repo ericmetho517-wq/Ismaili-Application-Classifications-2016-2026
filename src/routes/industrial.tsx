@@ -46,7 +46,7 @@ function IndustrialPage() {
             layers={[
               { key: "Study_Area_Sector", label: t.layers.study_area, type: "boundary", fixedColor: MAP_COLORS.studyArea },
               { key: "Axis_Road_Sector", label: t.layers.axis, type: "line", fixedColor: MAP_COLORS.axisRoad, weight: 4 },
-              { key: "Industrial_Changes", label: t.layers.industrial, type: "polygon", fixedColor: MAP_COLORS.industrial, highlightCircles: true },
+              { key: "Industrial_Changes", label: t.layers.industrial, type: "polygon", fixedColor: MAP_COLORS.industrial },
               { key: "Water_Changes", label: t.layers.water, type: "polygon", fixedColor: MAP_COLORS.water },
             ]}
             initialActive={["Study_Area_Sector", "Axis_Road_Sector", "Industrial_Changes", "Water_Changes"]}

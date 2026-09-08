@@ -29,7 +29,6 @@ type LayerSpec = {
   smoothFactor?: number;
   outlineOnly?: boolean;
   interactive?: boolean;
-  highlightCircles?: boolean;
 };
 
 type Basemap = "blue" | "streets" | "satellite" | "dark";
@@ -975,18 +974,6 @@ export function MapView(props: MapViewProps) {
 
           if (!cancelled && active.has(spec.key)) {
             layer.addTo(map);
-            if (spec.highlightCircles && features.length) {
-              const ranked = [...features].sort((a: any, b: any) => Number(b.properties?.SHAPE_Area ?? b.properties?.Shape_Area ?? 0) - Number(a.properties?.SHAPE_Area ?? a.properties?.Shape_Area ?? 0));
-              const centers: any[] = [];
-              const circleColors = ["#2563eb", "#f97316", "#22c55e", "#e11d48"];
-              ranked.forEach((feature: any) => {
-                const part = L.geoJSON(feature);
-                const center = part.getBounds().getCenter();
-                if (centers.some((other) => center.distanceTo(other) < 3200) || centers.length >= 3) return;
-                centers.push(center);
-                L.circle(center, { pane: "map-features", radius: 1150, color: circleColors[centers.length - 1], weight: 2.5, fill: false, opacity: 0.95, interactive: false }).addTo(layer);
-              });
-            }
             layerRefs.current[spec.key] = layer;
             hitTargetsRef.current[spec.key] = hitTargets;
 
