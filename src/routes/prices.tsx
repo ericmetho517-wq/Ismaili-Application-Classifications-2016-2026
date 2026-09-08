@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Building2, Factory, Sprout } from "lucide-react";
 import { loadPricingData } from "@/lib/data";
+import { asNumber, FIELDS } from "@/lib/analytics";
 import { pricingDomain, unitPriceRows, summarizeUnitPrices, type PricingDomain, type UnitPriceStats } from "@/lib/pricing";
 import { formatNum, useI18n } from "@/lib/i18n";
 import { TopBar } from "@/components/TopBar";
@@ -48,10 +49,10 @@ function money(value: number, lang: "ar" | "en") {
   return `${formatNum(value, lang, 0)} ${lang === "ar" ? "جنيه" : "EGP"}`;
 }
 
-function CategoryValueCard({ item, stats, lang }: { item: (typeof categoryCards)[number]; stats: UnitPriceStats; lang: "ar" | "en" }) {
+function CategoryValueCard({ item, stats, lang, active, onClick }: { item: (typeof categoryCards)[number]; stats: UnitPriceStats; lang: "ar" | "en"; active: boolean; onClick: () => void }) {
   const { Icon } = item;
   const difference = stats.total2026 - stats.total2016;
-  return <article className="relative flex min-h-[160px] flex-col items-center justify-center bg-black px-2.5 py-3 text-center text-white">
+  return <button type="button" onClick={onClick} aria-pressed={active} className={`relative flex min-h-[160px] w-full flex-col items-center justify-center bg-black px-2.5 py-3 text-center text-white transition ${active ? "ring-2 ring-inset" : "hover:bg-white/5"}`} style={{ "--tw-ring-color": item.color } as React.CSSProperties}>
     <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: item.color }} />
     <span className="mb-1 grid h-7 w-7 place-items-center rounded-md" style={{ color: item.color, backgroundColor: `${item.color}1f` }}><Icon className="h-3.5 w-3.5" /></span>
     <h3 className="text-sm font-black text-white sm:text-base">{lang === "ar" ? item.ar : item.en}</h3>
@@ -60,12 +61,12 @@ function CategoryValueCard({ item, stats, lang }: { item: (typeof categoryCards)
       <div className="ps-3"><p className="text-sm font-extrabold text-white/80 sm:text-base">{lang === "ar" ? "إجمالي 2026" : "Total 2026"}</p><strong className="mt-2 block text-xl font-black leading-tight sm:text-2xl" style={{ color: item.color }}>{money(stats.total2026, lang)}</strong></div>
       <div className="col-span-2 border-t border-white/15 pt-3"><p className="text-sm font-extrabold text-white/80 sm:text-base">{lang === "ar" ? "الفرق بين السنتين" : "Difference between years"}</p><strong className="mt-1 block text-2xl font-black leading-tight text-emerald-400 sm:text-3xl">{difference >= 0 ? "+" : ""}{money(difference, lang)}</strong></div>
     </div>
-  </article>;
+  </button>;
 }
 
 function PricesPage() {
   const { t, lang } = useI18n();
-  const category: CategoryFilter = "all";
+  const [category, setCategory] = useState<CategoryFilter>("all");
   const { data } = useQuery({ queryKey: ["pricing"], queryFn: loadPricingData });
 
   const rows = useMemo(() => unitPriceRows(data?.rows), [data]);
@@ -76,14 +77,20 @@ function PricesPage() {
   })) as Record<PricingDomain, UnitPriceStats>, [rows]);
   const overviewHeight = 560;
   const landUseLegend = useMemo(() => landUseLegendItems(lang), [lang]);
-  const mapFilter = useMemo(() => () => true, []);
+  const mapFilter = useMemo(() => (key: string, props: Record<string, unknown>) => {
+    if (category === "all" || (key !== "Land_Cover2016" && key !== "Land_Cover2026")) return true;
+    const domain = pricingDomain(String(props[FIELDS.useDesc] ?? ""), asNumber(props[FIELDS.useCode]));
+    if (domain !== category) return false;
+    const priceField = key === "Land_Cover2016" ? FIELDS.landPrice2016 : FIELDS.landPrice2026;
+    return asNumber(props[priceField]) > 0;
+  }, [category]);
 
   return (
     <div className="shrink-0">
       <TopBar title={lang === "ar" ? "أسعار الأراضي" : "Land Prices"} subtitle={lang === "ar" ? " " : "Choose a classification and view unit prices on the map"} />
 
       <section className="mb-2 overflow-hidden rounded-xl border border-border bg-border">
-        <div className="grid gap-px md:grid-cols-3">{categoryCards.map((item) => <CategoryValueCard key={item.key} item={item} stats={categoryStats[item.key]} lang={lang} />)}</div>
+        <div className="grid gap-px md:grid-cols-3">{categoryCards.map((item) => <CategoryValueCard key={item.key} item={item} stats={categoryStats[item.key]} lang={lang} active={category === item.key} onClick={() => setCategory(category === item.key ? "all" : item.key)} />)}</div>
       </section>
 
       <div className="grid gap-2 md:grid-cols-2">
